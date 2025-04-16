@@ -1,1 +1,1 @@
-Statistical analysis and predictive modeling of Cleveland heart disease dataset.
+Statistical analysis and predictive modeling of Cleveland heart disease data.
