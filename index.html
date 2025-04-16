@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Khadija Musayeva" />
+
+<meta name="date" content="2025-04-16" />
+
+<title>Heart disease analysis in R</title>
+
+<script src="HeartDiseaseClassification_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="HeartDiseaseClassification_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="HeartDiseaseClassification_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="HeartDiseaseClassification_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="HeartDiseaseClassification_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="HeartDiseaseClassification_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="HeartDiseaseClassification_files/navigation-1.1/tabsets.js"></script>
+<link href="HeartDiseaseClassification_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="HeartDiseaseClassification_files/highlightjs-9.12.0/highlight.js"></script>
+<script src="HeartDiseaseClassification_files/kePrint-0.0.1/kePrint.js"></script>
+<link href="HeartDiseaseClassification_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Heart disease analysis in R</h1>
+<h4 class="author">Khadija Musayeva</h4>
+<h4 class="date">2025-04-16</h4>
+
+</div>
+
+
+<style>
+body {
+  font-size: 18px;
+}
+</style>
+<div id="about-data-analysis-report" class="section level1">
+<h1>About Data Analysis Report</h1>
+<p>This RMarkdown file contains contains data exploration, data
+visualization, statistical/epidemiological and predictive modeling
+analyses of heart disease dataset. The final report was completed on Wed
+Apr 16 15:54:46 2025.</p>
+<p><strong>Data Description:</strong></p>
+<p>The following description is from the paper <span
+class="citation">Detrano et al. (1989)</span>.</p>
+<p>The dataset contains clinical and test data of <span
+class="math inline">\(303\)</span> patients referred for coronary
+angiography at the Cleveland Clinic between May 1981 and September 1984.
+No patient had a history or electrocardiographic evidence of prior
+myocardial infarction or known valvular or cardiomyopathic disease.</p>
+<p>Clinical variables are: <em>age</em>, <em>sex</em>, <em>systolic
+blood pressure</em>, <em>chest pain type</em> classified as typical
+angina, atypical angina, nonanginal, asymptomatic.</p>
+<p>Routine test data are: <em>serum cholesterol</em>, <em>fasting blood
+sugar</em> &gt;120 mg/dl and <em>electrocardiographic results</em> at
+rest classified as (1) normal; (2) ST-T-wave abnormality; or (3)
+probable or definite left ventricular hypertrophy by Estes’
+criteria.</p>
+<p>Noninvasive test data are: <em>exercise electrocardiogram</em>,
+exercisethallium scintigraphy and <em>fluoroscopy for coronary
+calcium</em>.</p>
+<p>Exercise data are: <em>maximal heart rate</em>, <em>exercise-induced
+angina</em>, <em>slope of the peak exercise ST segment</em> (upsloping,
+flat or downsloping), <em>exercise thallium scintigraphic defects</em>
+(fixed, reversible or none).</p>
+<p>Fluoroscopic data are the <em>number of major vessels that appeared
+to contain calcium</em>.</p>
+<p>We note that the cut-off threshold for fasting blood sugar, which is
+120 mg/dL in this 1989 dataset, might be lower according to current
+medical standards.</p>
+<div id="data-preprocessing-and-analysis" class="section level2">
+<h2>Data preprocessing and analysis</h2>
+<div id="install-and-load-packages" class="section level3">
+<h3>Install and load packages</h3>
+<pre class="r"><code>### we use pacman to install and load the required packages
+if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
+pacman::p_load(&quot;caret&quot;, &quot;data.table&quot;, &quot;DescTools&quot;, &quot;egg&quot;, &quot;epitools&quot;, &quot;GGally&quot;, &quot;ggplot2&quot;, &quot;gridExtra&quot;, &quot;kableExtra&quot;, &quot;magrittr&quot;, &quot;mlbench&quot;, &quot;mltools&quot;, &quot;naniar&quot;, &quot;parsnip&quot;, &quot;pROC&quot;, &quot;ranger&quot;, &quot;reshape2&quot;, &quot;recipes&quot;, &quot;rsample&quot;, &quot;shiny&quot;, &quot;smotefamily&quot;, &quot;themis&quot;,&quot;tidymodels&quot;, &quot;tune&quot;, &quot;viridis&quot;, &quot;workflows&quot;, &quot;yardstick&quot;, &quot;xgboost&quot;)
+
+source(&quot;utils.R&quot;)</code></pre>
+</div>
+<div id="load-the-data" class="section level3">
+<h3>Load the data</h3>
+<p>Read the data and check its dimensions.</p>
+<pre class="r"><code>dat &lt;- as.data.frame(read.csv(&quot;processed_cleveland.csv&quot;))
+cat(&quot;There are&quot;, nrow(dat), &quot;samples and&quot;, ncol(dat), &quot;input variables in the heart data.&quot;)</code></pre>
+<pre><code>## There are 303 samples and 14 input variables in the heart data.</code></pre>
+<p>What are the types of these variables?</p>
+<pre class="r"><code>sapply(dat, class)</code></pre>
+<pre><code>##         age         sex          cp    trestbps        chol         fbs 
+##   &quot;integer&quot;   &quot;integer&quot;   &quot;integer&quot;   &quot;integer&quot;   &quot;integer&quot;   &quot;integer&quot; 
+##     restecg     thalach       exang     oldpeak       slope          ca 
+##   &quot;integer&quot;   &quot;integer&quot;   &quot;integer&quot;   &quot;numeric&quot;   &quot;integer&quot; &quot;character&quot; 
+##        thal         num 
+## &quot;character&quot;   &quot;integer&quot;</code></pre>
+<p>We will rename the columns to render to match more or less their
+description.</p>
+<pre class="r"><code>names(dat) &lt;- c(&quot;age&quot;, &quot;sex&quot;, &quot;chest_pain_type&quot;, &quot;rest_blood_pressure&quot;, &quot;cholesterol&quot;, &quot;fasting_blood_sugar&quot;, &quot;restecg&quot;, &quot;max_heart_rate&quot;, &quot;exercise_induced_angina&quot;, &quot;oldpeak&quot;, &quot;slope&quot;, &quot;num_major_vessels&quot;, &quot;nuclear_stress_test&quot;, &quot;heart_disease&quot;)
+
+str(dat)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    303 obs. of  14 variables:
+##  $ age                    : int  63 67 67 37 41 56 62 57 63 53 ...
+##  $ sex                    : int  1 1 1 1 0 1 0 0 1 1 ...
+##  $ chest_pain_type        : int  1 4 4 3 2 2 4 4 4 4 ...
+##  $ rest_blood_pressure    : int  145 160 120 130 130 120 140 120 130 140 ...
+##  $ cholesterol            : int  233 286 229 250 204 236 268 354 254 203 ...
+##  $ fasting_blood_sugar    : int  1 0 0 0 0 0 0 0 0 1 ...
+##  $ restecg                : int  2 2 2 0 2 0 2 0 2 2 ...
+##  $ max_heart_rate         : int  150 108 129 187 172 178 160 163 147 155 ...
+##  $ exercise_induced_angina: int  0 1 1 0 0 0 0 1 0 1 ...
+##  $ oldpeak                : num  2.3 1.5 2.6 3.5 1.4 0.8 3.6 0.6 1.4 3.1 ...
+##  $ slope                  : int  3 2 2 3 1 1 3 1 2 3 ...
+##  $ num_major_vessels      : chr  &quot;0&quot; &quot;3&quot; &quot;2&quot; &quot;0&quot; ...
+##  $ nuclear_stress_test    : chr  &quot;6&quot; &quot;3&quot; &quot;7&quot; &quot;3&quot; ...
+##  $ heart_disease          : int  0 2 1 0 0 0 3 0 2 1 ...</code></pre>
+<p>From the description of the dataset, two variables, number of major
+vessels and results of nuclear stress test, have missing values, we
+convert these values to NA.</p>
+<pre class="r"><code>dat$num_major_vessels &lt;- as.integer(dat$num_major_vessels)</code></pre>
+<pre><code>## Warning: NAs introduits lors de la conversion automatique</code></pre>
+<pre class="r"><code>dat$nuclear_stress_test &lt;- ifelse(dat$nuclear_stress_test==&quot;?&quot;, NA, dat$nuclear_stress_test)</code></pre>
+<p>We convert the categorical variables, sex, chest pain type, fasting
+blood sugar, resting electrocardiograph results, exercise induced
+angina, nuclear stress test results, and also heart disease state to
+factor.</p>
+<pre class="r"><code>cat_vars &lt;- c(&quot;sex&quot;, &quot;chest_pain_type&quot;, &quot;fasting_blood_sugar&quot;, &quot;restecg&quot;, &quot;exercise_induced_angina&quot;, &quot;slope&quot;, &quot;nuclear_stress_test&quot;)
+
+dat[cat_vars] &lt;- lapply(dat[cat_vars] , factor)
+
+dat$heart_disease_present &lt;- factor(ifelse(dat$heart_disease &gt; 0, 1, 0), levels=c(0, 1))
+
+### convert all values greater than 0 to 1 for binary classification
+dat %&lt;&gt;% rename(heart_disease_severity = heart_disease) %&gt;% mutate(heart_disease_severity = factor(heart_disease_severity))</code></pre>
+<p>Recode the values of some categorical variables to make them more
+interpretable in the plots.</p>
+<pre class="r"><code>dat %&lt;&gt;%
+  mutate(
+    sex = recode(sex, `1` = &quot;male&quot;, `0` = &quot;female&quot;),
+    chest_pain_type = recode(chest_pain_type, `1` = &quot;typical angina&quot;, `2` = &quot;atypical angina&quot;, `3`=&quot;non-anginal&quot;, `4`=&quot;asymptomatic&quot;),
+    fasting_blood_sugar = recode(fasting_blood_sugar, `1` = &quot;high&quot;, `0` = &quot;normal&quot;),
+    exercise_induced_angina = recode(exercise_induced_angina, `1` = &quot;yes&quot;, `0` = &quot;no&quot;),
+    restecg = recode(restecg, `0`=&quot;normal&quot;, `1`=&quot;abnormal&quot;, `2`=&quot;hypertrophy&quot;),
+    nuclear_stress_test = recode(nuclear_stress_test, `3`=&quot;normal&quot;, `6`=&quot;fixed defect&quot;, `7`=&quot;reversible defect&quot;),
+    slope = recode(slope, `1`=&quot;up-slope&quot;, `2`=&quot;flat&quot;, `3`=&quot;down-slope&quot;)
+  )
+
+
+kable(head(dat), &quot;html&quot;) %&gt;%
+  kable_styling(font_size = 12, stripe_color = &quot;gray!10&quot;) %&gt;%
+  scroll_box(width = &quot;100%&quot;, height = &quot;300px&quot;)</code></pre>
+<div
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+<table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+age
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+sex
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+chest_pain_type
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rest_blood_pressure
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+cholesterol
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fasting_blood_sugar
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+restecg
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+max_heart_rate
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+exercise_induced_angina
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+oldpeak
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+slope
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+num_major_vessels
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+nuclear_stress_test
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+heart_disease_severity
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+heart_disease_present
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+typical angina
+</td>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+233
+</td>
+<td style="text-align:left;">
+high
+</td>
+<td style="text-align:left;">
+hypertrophy
+</td>
+<td style="text-align:right;">
+150
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+2.3
+</td>
+<td style="text-align:left;">
+down-slope
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+fixed defect
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+asymptomatic
+</td>
+<td style="text-align:right;">
+160
+</td>
+<td style="text-align:right;">
+286
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+hypertrophy
+</td>
+<td style="text-align:right;">
+108
+</td>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+1.5
+</td>
+<td style="text-align:left;">
+flat
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+asymptomatic
+</td>
+<td style="text-align:right;">
+120
+</td>
+<td style="text-align:right;">
+229
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+hypertrophy
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+2.6
+</td>
+<td style="text-align:left;">
+flat
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+reversible defect
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+non-anginal
+</td>
+<td style="text-align:right;">
+130
+</td>
+<td style="text-align:right;">
+250
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:right;">
+187
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+3.5
+</td>
+<td style="text-align:left;">
+down-slope
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:left;">
+female
+</td>
+<td style="text-align:left;">
+atypical angina
+</td>
+<td style="text-align:right;">
+130
+</td>
+<td style="text-align:right;">
+204
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+hypertrophy
+</td>
+<td style="text-align:right;">
+172
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+1.4
+</td>
+<td style="text-align:left;">
+up-slope
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+56
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:left;">
+atypical angina
+</td>
+<td style="text-align:right;">
+120
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:right;">
+178
+</td>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+0.8
+</td>
+<td style="text-align:left;">
+up-slope
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+normal
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<p>The plot below indicates that there are <span
+class="math inline">\(6\)</span> missing values: <span
+class="math inline">\(2\)</span> in nuclear stress test results and
+<span class="math inline">\(4\)</span> in number of major vessels.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/miss-plot-1.png" width="576" /></p>
+<p>The following plots show the distribution of the missing values with
+respect to two variables: sex and heart disease.</p>
+<p>The missing values of number of major vessels concern only males
+mostly without heart disease, while those in the results of nuclear
+stress test are distributed among both: <span
+class="math inline">\(1\)</span> in male with heart disease and <span
+class="math inline">\(1\)</span> in female without heart disease.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/miss-distribution-plot-1.png" width="1440" /></p>
+<p><br></p>
+</div>
+<div id="visualization" class="section level3">
+<h3><strong>Visualization</strong></h3>
+<div id="categorical-variable" class="section level4">
+<h4><strong>Categorical Variable</strong></h4>
+<p>The following plot illustrates the distribution of observations
+across all categorical variables. We see that heart disease of some
+gravity is present in <span class="math inline">\(46\%\)</span>, almost
+half of the individuals and <span class="math inline">\(4\%\)</span>
+percent of these individuals have severe case of heart disease. There
+are more males than females in this dataset: <span
+class="math inline">\(68\%\)</span> of observations.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-8-1.png" width="1440" /></p>
+</div>
+<div
+id="the-prevalence-of-heart-disease-cases-across-all-categorical-variables."
+class="section level4">
+<h4><strong>The prevalence of heart disease cases across all categorical
+variables.</strong></h4>
+<p>The following plot shows that <span
+class="math inline">\(55\%\)</span> of males have heart disease. Heart
+disease is present in <span class="math inline">\(73\%\)</span> of
+asymptomatic cases. <span class="math inline">\(31\%\)</span> of
+individuals who does not experience chest pain during physical exertion,
+at the <span class="math inline">\(120\)</span> mg/dL cut-off threshold,
+almost half of the individuals below the threshold of <span
+class="math inline">\(120\)</span> mg/dL, <span
+class="math inline">\(37\%\)</span> of patients with normal
+electrocardiographic results, <span class="math inline">\(31\%\)</span>
+of patients with normal nuclear stress test results have heart
+disease.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/heart-disease-1.png" width="1440" /></p>
+<p><br></p>
+</div>
+<div
+id="distribution-of-age-cholesterol-maximum-heart-rate-and-resting-blood-pressure."
+class="section level4">
+<h4><strong>Distribution of age, cholesterol, maximum heart rate and
+resting blood pressure.</strong></h4>
+<p>The distributions of age, cholesterol levels and resting blood
+pressure are almost bell shaped. The middle <span
+class="math inline">\(50\%\)</span> of age variable is somewhere between
+<span class="math inline">\(50\)</span> and <span
+class="math inline">\(60\)</span> years old, the maximum age is <span
+class="math inline">\(77\)</span> years old. The middle <span
+class="math inline">\(50\%\)</span> of cholesterol is between <span
+class="math inline">\(211\)</span> and <span
+class="math inline">\(275\)</span>, the middle <span
+class="math inline">\(50\%\)</span> of maximum heart rate is between
+<span class="math inline">\(134\)</span> and <span
+class="math inline">\(166\)</span>, and the middle <span
+class="math inline">\(50\%\)</span> of resting blood pressure is between
+<span class="math inline">\(120\)</span> and <span
+class="math inline">\(140\)</span>. There is an outlier point in
+cholesterol variable with the value above <span
+class="math inline">\(500\)</span>. In blood pressure variable the
+points with the value around <span class="math inline">\(200\)</span>
+stand out.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-9-1.png" width="1632" /></p>
+<p>The following plot shows that there is not much difference between
+<strong>cholesterol</strong> levels across the levels of heart disease
+status.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-10-1.png" width="1248" /></p>
+<p>Regarding the <strong>blood pressure</strong>, the distribution of
+the one corresponding to heart disease severity of 4 stands out, its
+median is much higher close to 150, and there is no much difference
+between those &lt;4.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-11-1.png" width="1248" /></p>
+<p><strong>Maximal heart rates of individuals with heart disease tend to
+be lower than those without.</strong> The density plot of maximal heart
+distribution of individuals without heart disease is shifted to the
+right. Separating this variable further across the severity of heart
+disease, we see that the median maximal heart rates of those with
+severity of <span class="math inline">\(3\)</span> and <span
+class="math inline">\(4\)</span>, are situated further belows than those
+with lesser severity.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-12-1.png" width="1248" /></p>
+<p><strong>Is the difference between the mean maximal heart rates of the
+two groups with and without heart disease statistically
+significant?</strong></p>
+<p>Checking for normality visually using qqplot shows that the maximal
+heart rate of group with no heart disease deviates from normality as it
+is also clear from the density plot above. The p-values obtained from
+Shapiro-Wilk test of normality also confirms this.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Next, we use an F-test to test the assumption of equal variances
+between individuals with and without heart disease. It shows that the
+variances of two groups are unequal (p = 0.05), and thus we would be
+better off using Welch t-test to compare the maximum heart rate between
+individuals without heart disease and those with heart disease.</p>
+<p><strong>Welch t-test shows a significant difference in mean maximum
+heart rate between the two groups: the mean maximum heart rate is <span
+class="math inline">\(158.4\)</span> bpm in the no-disease group,
+compared to <span class="math inline">\(139.3\)</span> bpm in the heart
+disease group. The <span class="math inline">\(95\%\)</span> confidence
+interval for the difference in means is [-23.91, -14.33], indicating
+that individuals with heart disease tend to have significantly lower
+maximum heart rates.</strong></p>
+<pre><code>## Alternative hypothesis: true ratio of variances is not equal to 1, p-value: 0.05</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  max_heart_rate by factor(heart_disease_present, levels = c(1, 0))
+## t = -7.8579, df = 272.27, p-value = 9.106e-14
+## alternative hypothesis: true difference in means between group 1 and group 0 is not equal to 0
+## 95 percent confidence interval:
+##  -23.90912 -14.32900
+## sample estimates:
+## mean in group 1 mean in group 0 
+##         139.259         158.378</code></pre>
+<p><strong>The median age of individuals with heart disease is higher,
+close to 60</strong>, than those without one, however overall these two
+class-conditional distributions overlap.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-15-1.png" width="1248" /></p>
+<p>According to Welch t-test the difference in the mean age between the
+two groups is statistically significant. The mean age is <span
+class="math inline">\(56.6\)</span> in the no-disease group, compared to
+<span class="math inline">\(52.6\)</span> in the heart disease group,
+and the <span class="math inline">\(95\%\)</span> confidence interval
+for the difference in means is [<span class="math inline">\(2\)</span>,
+<span class="math inline">\(6\)</span>], showing that individuals with
+heart disease tend to be of older age.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  age by factor(heart_disease_present, levels = c(1, 0))
+## t = 4.0303, df = 300.93, p-value = 7.061e-05
+## alternative hypothesis: true difference in means between group 1 and group 0 is not equal to 0
+## 95 percent confidence interval:
+##  2.067682 6.013385
+## sample estimates:
+## mean in group 1 mean in group 0 
+##        56.62590        52.58537</code></pre>
+<p><br></p>
+</div>
+<div id="pairwise-plots" class="section level4">
+<h4><strong>Pairwise Plots</strong></h4>
+<p>Next, we analyze pairwise relationships between these variables
+conditioned on heart disease variable. Independent of heart condition,
+maximum heart rate decreases with age, and those of individuals with
+heart disease tend to be lower.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-18-1.png" width="960" /></p>
+<p>We can do linear regression controlling for age variable. The linear
+regression model of maximum heart rate as a dependent variable of age
+and heart disease predictors shows that with each additional year of age
+the maximum heart rate decreases by 0.8 bpm on average. For a given age,
+heart disease patients have, on average, 15.9 bpm lower maximum heart
+rate than those without heart disease.</p>
+<pre><code>## 
+## Call:
+## lm(formula = max_heart_rate ~ age + heart_disease_present, data = dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -59.950 -11.799   2.551  12.898  53.638 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)            200.4965     6.9102  29.014  &lt; 2e-16 ***
+## age                     -0.8010     0.1281  -6.251 1.40e-09 ***
+## heart_disease_present1 -15.8828     2.3205  -6.845 4.33e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 19.62 on 300 degrees of freedom
+## Multiple R-squared:  0.2692, Adjusted R-squared:  0.2643 
+## F-statistic: 55.26 on 2 and 300 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The following plots display the distributions of ST depression
+induced by exercise relative to rest, which is oldpeak variable, and the
+number of major vessels which appeared to contain calcium.</p>
+<p><strong>The class-conditional density plot shows that individuals
+without heart disease tend to have oldpeak values concentrated close to
+<span class="math inline">\(0\)</span>, with the majority falling
+between <span class="math inline">\(0\)</span> and <span
+class="math inline">\(1\)</span>. In contrast, those with heart disease
+show a broader distribution, with oldpeak values more spread out and
+generally higher. As the number of major vessels that appeared to
+contain calcium increases, the prevalence of heart disease in the
+corresponding group increases: <span class="math inline">\(85\%\)</span>
+of patients with <span class="math inline">\(3\)</span> such vessels
+have heart disease.</strong></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-20-1.png" width="1920" /></p>
+<p><br></p>
+</div>
+</div>
+<div id="epidemiological-analysis" class="section level3">
+<h3><strong>Epidemiological Analysis</strong></h3>
+<p>In this section, we will do odds ratio (OR) analysis of association
+between variables.</p>
+<div id="unadjusted-odds-ratio" class="section level4 tabset">
+<h4 class="tabset"><strong>(Unadjusted) Odds Ratio</strong></h4>
+<p>The outcome of interest is heart disease, and the exposures are: sex,
+fasting glucose level, exercise induced angina, slope, chest pain type,
+and nuclear stress test.</p>
+<p>The results are summarized in a table output and illustrated by
+barplot with <span class="math inline">\(95\%\)</span> condifence
+interval.</p>
+<p>Regarding the <strong>gender</strong> of individuals, the odds of
+heart disease in males is <span class="math inline">\(3.5\)</span> times
+that in females.</p>
+<p>Compared to individuals with normal <strong>fasting blood
+sugar</strong> level, those with high level have <span
+class="math inline">\(1.15\)</span> times the odds of heart disease.
+However, this difference is not statistically significant, the data do
+not support a clear association between high fasting blood sugar level
+and heart disease risk.</p>
+<p>Odds of heart disease in individuals who experience <strong>exercise
+induced angina</strong> is <span class="math inline">\(7.3\)</span>
+times higher than in those who do not experience exercise induced
+angina.</p>
+<div id="plot" class="section level5">
+<h5>Plot</h5>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-21-1.png" width="1920" /></p>
+</div>
+<div id="table" class="section level5">
+<h5>Table</h5>
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Odds Ratios and 95% CIs
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:left;">
+Category
+</th>
+<th style="text-align:right;">
+Odds Ratio
+</th>
+<th style="text-align:right;">
+95% CI (Lower)
+</th>
+<th style="text-align:right;">
+95% CI (Upper)
+</th>
+<th style="text-align:right;">
+P-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Gender
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.347
+</td>
+<td style="text-align:right;">
+0.216
+</td>
+<td style="text-align:right;">
+0.539
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gender
+</td>
+<td style="text-align:left;">
+male
+</td>
+<td style="text-align:right;">
+3.569
+</td>
+<td style="text-align:right;">
+2.121
+</td>
+<td style="text-align:right;">
+6.159
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fasting blood sugar
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.830
+</td>
+<td style="text-align:right;">
+0.649
+</td>
+<td style="text-align:right;">
+1.060
+</td>
+<td style="text-align:right;">
+0.136
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fasting blood sugar
+</td>
+<td style="text-align:left;">
+high
+</td>
+<td style="text-align:right;">
+1.153
+</td>
+<td style="text-align:right;">
+0.609
+</td>
+<td style="text-align:right;">
+2.178
+</td>
+<td style="text-align:right;">
+0.660
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exercise induced angina
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.447
+</td>
+<td style="text-align:right;">
+0.330
+</td>
+<td style="text-align:right;">
+0.598
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exercise induced angina
+</td>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+7.395
+</td>
+<td style="text-align:right;">
+4.314
+</td>
+<td style="text-align:right;">
+13.079
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</div>
+</div>
+<div id="unadjusted-odds-ratio-with-multinomial-variables"
+class="section level4 tabset">
+<h4 class="tabset"><strong>(Unadjusted) Odds Ratio with Multinomial
+Variables</strong></h4>
+<p>Here we consider odds ratio analysis regarding multinomial
+categorical variables: slope, chest pain type, nuclear stress test and
+electrocardiographic results at rest.</p>
+<p>For <em>slope variable</em>, upslope is the reference group. The
+following result shows that odds of heart disease in upslope group is
+<span class="math inline">\(0.34\)</span> than in those not in upslope:
+<span class="math inline">\((1-1/5.47)*100= 82\%\)</span> lower than the
+flat group and <span class="math inline">\((1-1/3.93)*100= 75\%\)</span>
+lower than the downslope group. Odds of heart disease in flat group is
+<span class="math inline">\(5.4\)</span> times higher than upslope group
+and odds of heart disease in downslope group is <span
+class="math inline">\(3.9\)</span> times higher than upslope group. Note
+that the confidence interval for downslope group is larger, since this
+group contains a small number of individuals.</p>
+<p>Compared to individuals with <em>typical angina</em>, those with
+asymptomatic presentation have significantly higher odds of heart
+disease: 6.15 times that with typical angina. In contrast, those with
+atypical angina (OR = 0.50) and non-anginal pain (OR = 0.61) have lower
+but non-significant odds of heart disease.</p>
+<p>Compared to individuals with normal <em>nuclear stress test
+results</em>, those with a fixed defect have <span
+class="math inline">\(7\)</span> times greater odds of heart disease,
+while those with a reversible defect have <span
+class="math inline">\(11\)</span> greater odds. These results are highly
+statistically significant and align with clinical understanding that
+reversible defects indicate myocardial ischemia.</p>
+<div id="plot-1" class="section level5">
+<h5>Plot</h5>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-24-1.png" width="1920" /></p>
+</div>
+<div id="table-1" class="section level5">
+<h5>Table</h5>
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Odds Ratios and 95% CIs
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:left;">
+Category
+</th>
+<th style="text-align:right;">
+Odds Ratio
+</th>
+<th style="text-align:right;">
+95% CI (Lower)
+</th>
+<th style="text-align:right;">
+95% CI (Upper)
+</th>
+<th style="text-align:right;">
+P-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Slope
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.340
+</td>
+<td style="text-align:right;">
+0.230
+</td>
+<td style="text-align:right;">
+0.490
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Slope
+</td>
+<td style="text-align:left;">
+flat
+</td>
+<td style="text-align:right;">
+5.468
+</td>
+<td style="text-align:right;">
+3.300
+</td>
+<td style="text-align:right;">
+9.229
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Slope
+</td>
+<td style="text-align:left;">
+down-slope
+</td>
+<td style="text-align:right;">
+3.926
+</td>
+<td style="text-align:right;">
+1.538
+</td>
+<td style="text-align:right;">
+10.368
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Chest pain type
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.438
+</td>
+<td style="text-align:right;">
+0.168
+</td>
+<td style="text-align:right;">
+1.025
+</td>
+<td style="text-align:right;">
+0.068
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Chest pain type
+</td>
+<td style="text-align:left;">
+atypical angina
+</td>
+<td style="text-align:right;">
+0.502
+</td>
+<td style="text-align:right;">
+0.159
+</td>
+<td style="text-align:right;">
+1.614
+</td>
+<td style="text-align:right;">
+0.237
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Chest pain type
+</td>
+<td style="text-align:left;">
+non-anginal
+</td>
+<td style="text-align:right;">
+0.605
+</td>
+<td style="text-align:right;">
+0.221
+</td>
+<td style="text-align:right;">
+1.772
+</td>
+<td style="text-align:right;">
+0.339
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Chest pain type
+</td>
+<td style="text-align:left;">
+asymptomatic
+</td>
+<td style="text-align:right;">
+6.154
+</td>
+<td style="text-align:right;">
+2.434
+</td>
+<td style="text-align:right;">
+17.077
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nuclear stress test
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.287
+</td>
+<td style="text-align:right;">
+0.196
+</td>
+<td style="text-align:right;">
+0.409
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nuclear stress test
+</td>
+<td style="text-align:left;">
+fixed defect
+</td>
+<td style="text-align:right;">
+6.973
+</td>
+<td style="text-align:right;">
+2.531
+</td>
+<td style="text-align:right;">
+21.225
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nuclear stress test
+</td>
+<td style="text-align:left;">
+reversible defect
+</td>
+<td style="text-align:right;">
+11.082
+</td>
+<td style="text-align:right;">
+6.412
+</td>
+<td style="text-align:right;">
+19.708
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Restecg
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.589
+</td>
+<td style="text-align:right;">
+0.421
+</td>
+<td style="text-align:right;">
+0.817
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Restecg
+</td>
+<td style="text-align:left;">
+abnormal
+</td>
+<td style="text-align:right;">
+5.089
+</td>
+<td style="text-align:right;">
+0.635
+</td>
+<td style="text-align:right;">
+104.243
+</td>
+<td style="text-align:right;">
+0.163
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Restecg
+</td>
+<td style="text-align:left;">
+hypertrophy
+</td>
+<td style="text-align:right;">
+1.996
+</td>
+<td style="text-align:right;">
+1.260
+</td>
+<td style="text-align:right;">
+3.180
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="adjusted-odds-ratio" class="section level4">
+<h4><strong>Adjusted Odds Ratio</strong></h4>
+<p>Now, we take into account all predictors in the logistic regression
+model to compute OR of heart disease. Feature selection process based on
+Akaike’s information criterion removes restecg and age variables.</p>
+<p>Statistically important predictors of odds of heart disease are sex,
+chest pain type, resting blood pressure, maximum heart rate, oldpeak,
+number of major ca vessels, and nuclear stress test results.</p>
+<p>Holding other variables constant,</p>
+<ul>
+<li><p>males have <span class="math inline">\(4\)</span> times the odds
+of heart disease compared to females</p></li>
+<li><p>individuals with asymptomatic presentation have <span
+class="math inline">\(7\)</span> times the odds of heart disease
+compared to those with typical angina</p></li>
+<li><p>each <span class="math inline">\(1\)</span> mmHg increase in
+resting blood pressure is associated with a <span
+class="math inline">\(2.1\%\)</span> increase in the odds of heart
+disease</p></li>
+<li><p>each <span class="math inline">\(1\)</span> bpm increase in max
+heart rate is associated with a <span
+class="math inline">\(2.3\%\)</span> decrease in the odds of heart
+disease</p></li>
+<li><p>for every <span class="math inline">\(1\)</span> unit increase in
+ST depression, the odds of heart disease increase by <span
+class="math inline">\(71\%\)</span></p></li>
+<li><p>each additional major vessel visible via fluoroscopy
+<em>triples</em> the odds of heart disease</p></li>
+<li><p>individuals with a reversible defect on a nuclear stress test
+have <span class="math inline">\(4\)</span> times higher odds of heart
+disease compared to those with normal results.</p></li>
+</ul>
+<table class=" lightable-paper lightable-hover" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Adjusted Odds Ratios
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.009
+</td>
+<td style="text-align:right;">
+0.037
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sexmale
+</td>
+<td style="text-align:right;">
+4.037
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chest_pain_typeasymptomatic
+</td>
+<td style="text-align:right;">
+6.988
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rest_blood_pressure
+</td>
+<td style="text-align:right;">
+1.021
+</td>
+<td style="text-align:right;">
+0.044
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+max_heart_rate
+</td>
+<td style="text-align:right;">
+0.977
+</td>
+<td style="text-align:right;">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+oldpeak
+</td>
+<td style="text-align:right;">
+1.709
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+num_major_vessels
+</td>
+<td style="text-align:right;">
+2.990
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nuclear_stress_testreversible defect
+</td>
+<td style="text-align:right;">
+4.136
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+</div>
+</div>
+</div>
+</div>
+<div id="predictive-modeling" class="section level1">
+<h1>Predictive Modeling</h1>
+<div id="evaluation-measures" class="section level3">
+<h3><strong>Evaluation Measures</strong></h3>
+<p>Apart from the standard classification accuracy, the measures that we
+use for performance evaluation are <em>sensitivity</em>,
+<em>specificity</em>, <em>F1-measure</em>, <em>area under the ROC
+curve</em>, <em>Matthews correlation coefficient</em> and
+<em>accuracy</em>. <strong>Sensitivity measures the proportion of
+individuals correctly identified as having heart disease among those who
+actually have heart disease, and specificity measures the proportion of
+individuals correctly identified as healthy among those who are actually
+healthy.</strong> These measures take values between <span
+class="math inline">\(0\)</span> and <span
+class="math inline">\(1\)</span>.</p>
+<p>Sensitivity is also known as <em>recall</em>. <em>Precision</em>
+computes the fraction of true positives in all positively predicted
+outputs (i.e., true and false positives). The <em>F1-measure</em> is the
+harmonic mean of precision and recall, it balances precision and recall.
+But notice that if the specificity is 1 and the sensitivity is 0, then
+the precision is undefined, since there is neither true positives or
+false positives predicted, and thus, F1 measure is not defined.</p>
+<p>Next, we consider the <em>area under the ROC curve</em>. This curve
+draws sensitivity against <em>false positive rate</em> (1-specificity)
+at every cut-off threshold level for predicted probability values, and
+the larger the area under this curve the better the predictive
+performance of algorithm.</p>
+<p>Finally, <em>Matthews correlation coefficient</em> is computed based
+on the entire confusion matrix, i.e., it takes into account true
+positives, false positives, true negatives and false negatives.</p>
+<p><br></p>
+</div>
+<div id="data-split" class="section level3">
+<h3><strong>Data Split</strong></h3>
+<p>We split the data into <span class="math inline">\(75\%\)</span>
+training and <span class="math inline">\(25\%\)</span> test set using
+rsample package of tidymodels framework. In what follows, we use
+set.seed to ensure reproducibility.</p>
+<pre class="r"><code>set.seed(123)
+
+dat &lt;- dat %&gt;% select(-heart_disease_severity)
+
+dat_split &lt;- initial_split(dat, prop = 3/4, strata = heart_disease_present)
+
+dat_train &lt;- training(dat_split)
+
+dat_test &lt;- testing(dat_split)
+                      
+dat_cv &lt;- vfold_cv(dat_train)</code></pre>
+<p><br></p>
+</div>
+<div id="models" class="section level3 tabset">
+<h3 class="tabset"><strong>Models</strong></h3>
+<p>We use logistic regression, and models of higher capacity capable of
+learning non-linear decision boundaries, such as random forest and an
+improved version of the gradient boosting method, extreme gradient
+boosting. The latter models are particularly suitable for data with many
+categorical variables.</p>
+<p>We use the parsnip package of tidymodels to train the models, and the
+dials package to do grid search for hyperparameter tuning.</p>
+<div id="logistic-regression" class="section level4">
+<h4><strong>Logistic Regression</strong></h4>
+<pre class="r"><code>ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
+
+dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% step_impute_knn(all_predictors())
+
+lr_model &lt;- logistic_reg() %&gt;%  set_engine(&quot;glm&quot;) %&gt;% set_mode(&quot;classification&quot;) 
+
+lr_workflow &lt;- workflow() %&gt;% add_model(lr_model) %&gt;% add_recipe(dat_recipe)
+
+lr_fit &lt;- fit(lr_workflow, data = dat_train)
+
+lr_fit_extracted &lt;- extract_fit_engine(lr_fit)
+
+lr_probs &lt;- predict(lr_fit, dat_test, type = &quot;prob&quot;)
+
+lr_result &lt;- evaluate_model_fit(ground_truth, lr_probs$.pred_1)</code></pre>
+</div>
+<div id="random-forest" class="section level4">
+<h4><strong>Random Forest</strong></h4>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age +sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + restecg + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) 
+
+rf_model &lt;- rand_forest(
+  mtry = tune(),    # Number of predictors sampled at each split
+  trees = tune(),   # Number of trees in the forest
+  min_n = tune()    # Minimum number of data points in a node to proceed with a split
+) %&gt;%
+  set_engine(&quot;ranger&quot;) %&gt;%
+  set_mode(&quot;classification&quot;)
+
+rf_workflow &lt;- workflow() %&gt;%
+  add_recipe(dat_recipe) %&gt;%
+  add_model(rf_model)
+
+rf_grid &lt;- expand.grid(
+  mtry = c(2, 3, 4, 5, 7),
+  trees = c(100, 500, 750, 1000),
+  min_n = c(5, 10, 15)
+)
+
+rf_tune_results &lt;- rf_workflow %&gt;% 
+    tune_grid(resamples = dat_cv, grid = rf_grid, metrics = metric_set(accuracy))
+
+param_final &lt;- rf_tune_results %&gt;% select_best(metric = &quot;accuracy&quot;)
+
+rf_workflow &lt;- rf_workflow %&gt;% finalize_workflow(param_final)
+
+rf_fit &lt;- rf_workflow %&gt;% last_fit(dat_split)
+
+rf_probs &lt;- as.data.frame(rf_fit$.predictions)$.pred_1
+
+rf_result &lt;- evaluate_model_fit(ground_truth, rf_probs)</code></pre>
+</div>
+<div id="extreme-gradient-boosting" class="section level4">
+<h4><strong>Extreme Gradient Boosting</strong></h4>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + restecg + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%&gt;% 
+  step_impute_knn(all_predictors()) %&gt;%  
+  step_dummy(all_nominal_predictors())
+
+
+xgb_spec &lt;- boost_tree(
+  trees = tune(),              # Number of boosting iterations (nrounds)
+  tree_depth = tune(),         # Maximum tree depth
+  learn_rate = tune(),         # Learning rate (eta)
+  loss_reduction = tune(),     # Minimum loss reduction (gamma)
+  min_n = tune()               # Minimum number of observations per node
+) %&gt;% 
+  set_mode(&quot;classification&quot;) %&gt;% 
+  set_engine(&quot;xgboost&quot;, eval_metric = &quot;error&quot;)
+
+# Create a workflow that bundles the recipe and model.
+wflow &lt;- workflow() %&gt;% 
+  add_recipe(dat_recipe) %&gt;% 
+  add_model(xgb_spec)
+
+# Here we use grid_regular() from the dials package to create a regular grid.
+grid_vals &lt;- grid_regular(
+  trees(range = c(100, 1000)),
+  tree_depth(range = c(3, 9)),
+  learn_rate(range = c(0.01, 0.3)),
+  loss_reduction(range = c(0, 2)),
+  min_n(range = c(1, 10)),
+  levels = 3
+)
+
+
+# Perform grid search using tune_grid() optimizing for accuracy.
+tune_res &lt;- tune_grid(
+  wflow,
+  resamples = dat_cv,
+  grid = grid_vals,
+  metrics = metric_set(accuracy)
+)
+
+# Collect and inspect the results.
+# collect_metrics(tune_res)
+
+# Select the best hyperparameter configuration based on accuracy.
+best_res &lt;- select_best(tune_res, metric=&quot;accuracy&quot;)
+
+# Finalize the workflow with the best parameters.
+final_wflow &lt;- finalize_workflow(wflow, best_res)
+
+# Fit the final model on the training set and evaluate on the test set
+final_fit &lt;- last_fit(final_wflow, split = dat_split)
+
+preds  &lt;- as.data.frame(final_fit$.predictions)
+
+xgb_probs &lt;- preds$.pred_1
+
+#final_metrics &lt;- collect_metrics(final_fit)
+
+xgb_result &lt;- evaluate_model_fit(ground_truth, xgb_probs)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="performance-comparison-of-models" class="section level3">
+<h3><strong>Performance comparison of models</strong></h3>
+<p>Logistic regression on this small dataset is superior to random
+forest and XGBoost with respect to all the evaluation measures
+considered as visualized by the plots below.</p>
+<pre class="r"><code>results_df &lt;- tribble(
+  ~Model,         ~Accuracy, ~Sensitivity, ~Specificity, ~F1,       ~AUC,      ~Matthews,
+  &quot;Logistic Reg&quot;, lr_result$acc, lr_result$sensi, lr_result$speci, lr_result$f1, lr_result$aucroc, lr_result$matcc,
+  &quot;Random Forest&quot;, rf_result$acc, rf_result$sensi, rf_result$speci, rf_result$f1, rf_result$aucroc, rf_result$matcc,
+  &quot;XGBoost&quot;,       xgb_result$acc, xgb_result$sensi, xgb_result$speci, xgb_result$f1, xgb_result$aucroc, xgb_result$matcc
+)
+
+results_long &lt;- results_df %&gt;% pivot_longer(cols = -Model, names_to = &quot;Metric&quot;, values_to = &quot;Value&quot;)
+
+ggplot(results_long, aes(x = Metric, y = Value, fill = Model)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(), width = 0.7, color=&quot;#8B8B7A&quot;) +
+  scale_y_continuous(n.breaks=10)+
+  scale_fill_brewer(palette = &quot;Set2&quot;) +
+  scale_color_brewer(palette = &quot;Set2&quot;) +
+  labs(
+    title = &quot;Performance comparison&quot;,
+    y = &quot;Value&quot;,
+    x = &quot;&quot;
+  ) +
+  theme_minimal()+     
+  theme(plot.title = element_text(hjust = 0.5, size = 16))</code></pre>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-31-1.png" width="960" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-32-1.png" width="1728" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-33-1.png" width="1248" /></p>
+<p><br></p>
+<div id="incorrect-predictions-of-logistic-regression"
+class="section level4">
+<h4><strong>Incorrect predictions of logistic regression</strong></h4>
+<p>Now let us look at the distribution of incorrect predictions of
+logistic regression. In the confusion matrix above, we see that logistic
+regression made <span class="math inline">\(4\)</span> false positive
+and <span class="math inline">\(6\)</span> false negative predictions.
+Since maximum heart rate and old peak are relatively more discriminating
+predictors among the continuous variables we considered, below we
+overlay the incorrect predictions over the respective distributions of
+these variables.</p>
+<p><img src="HeartDiseaseClassification_files/figure-html/incorrect-preds-1.png" width="1440" /></p>
+<p>From our statistical analysis, we saw that individuals with heart
+disease tend to have lower maximum heart rate at stress. However, since
+there is an overlap in the class-conditional distributions of this
+variable, there are individuals with heart disease who also have higher
+maximum heart rate, and the algorithm predicts these individuals as
+healthy. Those are the false negatives. The same goes for healthy
+individuals with relatively lower maximum heart rate at stress,
+predicted as heart disease cases by the algorithm, thus they consitute
+false positives. This reasoning applies to oldpeak variable, i.e., the
+exercise induced ST depression. The healthy individuals tend to have
+lower oldpeak values, but there are individuals with heart disease who
+also have lower oldpeak values, and the algorithm predicts them as
+healthy, and thus they are false negatives. Similarly, there are
+individuals with no heart disease with higher oldpeak values, predicted
+as heart disease cases, thus they consitute false positives.</p>
+<p><br></p>
+</div>
+<div
+id="positive-predictive-value-and-negative-predictive-value-of-logistic-regression"
+class="section level4">
+<h4><strong>Positive predictive value and negative predictive value of
+logistic regression</strong></h4>
+<p>The positive predictive value (PPV) is the probability that an
+individual predicted to have heart disease truly has heart disease,
+while the negative predictive value (NPV) is the probability that an
+individual predicted not to have heart disease truly does not have heart
+disease. Considering our logistic regression model as a diagnostic tool,
+the probability that an individual predicted to have heart disease have
+heart disease is <span class="math inline">\(88\%\)</span> and the
+probability that an individual predicted not to have heart disease does
+not have heart disease is <span class="math inline">\(98\%\)</span>.</p>
+<pre class="r"><code>cm &lt;- confusionMatrix(lr_result$pred_class, ground_truth, positive = &quot;1&quot;)
+metrics &lt;- cm$byClass
+ppv &lt;- metrics[3]
+npv &lt;- metrics[4]
+
+cat(&quot;Positive predicted value is&quot;, round(ppv,2), &quot;and negative predicted value is&quot;, round(npv, 2))</code></pre>
+<pre><code>## Positive predicted value is 0.88 and negative predicted value is 0.86</code></pre>
+<p><br></p>
+<!-- # Deploying the Prediction Model -->
+<!-- We train logistic regression model on the entire dataset, where we impute the missing values, save the trained model and deploy it via shiny apps. -->
+<!-- ```{r} -->
+<!-- final_data <- dat -->
+<!-- ### data -->
+<!-- final_recipe <- recipe(heart_disease_present ~ ., data = final_data) %>% -->
+<!--   step_impute_knn(all_predictors()) %>% -->
+<!--   step_dummy(all_nominal_predictors()) -->
+<!-- ### workflow -->
+<!-- final_workflow <- workflow() %>%  -->
+<!--   add_model(lr_model) %>%  -->
+<!--   add_recipe(final_recipe) -->
+<!-- final_fit <- fit(final_workflow, data = final_data) -->
+<!-- saveRDS(final_fit, file = "heart_disease_model.rds") -->
+<!-- ``` -->
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+<div id="ref-Detrano89" class="csl-entry">
+Detrano, Robert, Andras Janosi, Walter Steinbrunn, Matthias Pfisterer,
+Johann-Jakob Schmid, Sarbjit Sandhu, Kern H Guppy, Stella Lee, and
+Victor Froelicher. 1989. <em>International Application of a New
+Probability Algorithm for the Diagnosis of Coronary Artery Disease</em>.
+<em>The American Journal of Cardiology</em>. Vol. 64. Elsevier.
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
