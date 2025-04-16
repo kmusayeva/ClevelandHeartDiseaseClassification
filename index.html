@@ -197,14 +197,14 @@ pre code {
 <style>
 body {
   font-size: 18px;
+  text-align: justify
 }
 </style>
 <div id="about-data-analysis-report" class="section level1">
 <h1>About Data Analysis Report</h1>
 <p>This RMarkdown file contains contains data exploration, data
 visualization, statistical/epidemiological and predictive modeling
-analyses of heart disease dataset. The final report was completed on Wed
-Apr 16 15:54:46 2025.</p>
+analyses of Cleveland heart disease data.</p>
 <p><strong>Data Description:</strong></p>
 <p>The following description is from the paper <span
 class="citation">Detrano et al. (1989)</span>.</p>
@@ -1570,7 +1570,7 @@ dials package to do grid search for hyperparameter tuning.</p>
 <h4><strong>Logistic Regression</strong></h4>
 <pre class="r"><code>ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
 
-dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% step_impute_knn(all_predictors())
+dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% step_impute_knn(all_predictors())
 
 lr_model &lt;- logistic_reg() %&gt;%  set_engine(&quot;glm&quot;) %&gt;% set_mode(&quot;classification&quot;) 
 
@@ -1761,23 +1761,31 @@ ppv &lt;- metrics[3]
 npv &lt;- metrics[4]
 
 cat(&quot;Positive predicted value is&quot;, round(ppv,2), &quot;and negative predicted value is&quot;, round(npv, 2))</code></pre>
-<pre><code>## Positive predicted value is 0.88 and negative predicted value is 0.86</code></pre>
+<pre><code>## Positive predicted value is 0.89 and negative predicted value is 0.9</code></pre>
 <p><br></p>
-<!-- # Deploying the Prediction Model -->
-<!-- We train logistic regression model on the entire dataset, where we impute the missing values, save the trained model and deploy it via shiny apps. -->
-<!-- ```{r} -->
-<!-- final_data <- dat -->
-<!-- ### data -->
-<!-- final_recipe <- recipe(heart_disease_present ~ ., data = final_data) %>% -->
-<!--   step_impute_knn(all_predictors()) %>% -->
-<!--   step_dummy(all_nominal_predictors()) -->
-<!-- ### workflow -->
-<!-- final_workflow <- workflow() %>%  -->
-<!--   add_model(lr_model) %>%  -->
-<!--   add_recipe(final_recipe) -->
-<!-- final_fit <- fit(final_workflow, data = final_data) -->
-<!-- saveRDS(final_fit, file = "heart_disease_model.rds") -->
-<!-- ``` -->
+</div>
+</div>
+</div>
+<div id="deploying-the-prediction-model" class="section level1">
+<h1>Deploying the Prediction Model</h1>
+<p>We train logistic regression model on the entire dataset, where we
+select important predictors and impute the missing values, save the
+trained model and deploy it via shiny apps.</p>
+<pre class="r"><code>final_data &lt;- dat
+
+### data
+final_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = final_data) %&gt;%
+  step_impute_knn(all_predictors()) %&gt;%
+  step_dummy(all_nominal_predictors())
+
+### workflow
+final_workflow &lt;- workflow() %&gt;%
+  add_model(lr_model) %&gt;%
+  add_recipe(final_recipe)
+
+final_fit &lt;- fit(final_workflow, data = final_data)
+
+saveRDS(final_fit, file = &quot;heart_disease_model.rds&quot;)</code></pre>
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">
 <div id="ref-Detrano89" class="csl-entry">
@@ -1786,8 +1794,6 @@ Johann-Jakob Schmid, Sarbjit Sandhu, Kern H Guppy, Stella Lee, and
 Victor Froelicher. 1989. <em>International Application of a New
 Probability Algorithm for the Diagnosis of Coronary Artery Disease</em>.
 <em>The American Journal of Cardiology</em>. Vol. 64. Elsevier.
-</div>
-</div>
 </div>
 </div>
 </div>

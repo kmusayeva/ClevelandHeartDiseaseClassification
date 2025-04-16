@@ -12,12 +12,13 @@ bibliography: ref.bib
 <style>
 body {
   font-size: 18px;
+  text-align: justify
 }
 </style>
 ```
 # About Data Analysis Report
 
-This RMarkdown file contains contains data exploration, data visualization, statistical/epidemiological and predictive modeling analyses of heart disease dataset. The final report was completed on `r date()`.
+This RMarkdown file contains contains data exploration, data visualization, statistical/epidemiological and predictive modeling analyses of Cleveland heart disease data. 
 
 **Data Description:**
 
