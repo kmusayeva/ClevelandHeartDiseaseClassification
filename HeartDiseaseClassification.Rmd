@@ -28,13 +28,12 @@ The dataset contains clinical and test data of $303$ patients referred for coron
 
 Clinical variables are: *age*, *sex*, *systolic blood pressure*, *chest pain type* classified as typical angina, atypical angina, nonanginal, asymptomatic.
 
-Routine test data are: *serum cholesterol*, *fasting blood sugar* \>120 mg/dl and *electrocardiographic results* at rest classified as (1) normal; (2) ST-T-wave abnormality; or (3) probable or definite left ventricular hypertrophy by Estes’ criteria.
-
-Noninvasive test data are: *exercise electrocardiogram*, exercisethallium scintigraphy and *fluoroscopy for coronary calcium*.
+Routine test data are: *serum cholesterol*, *fasting blood sugar* \>120 mg/dl and *electrocardiographic results at rest* classified as (1) normal; (2) ST-T-wave abnormality; or (3) probable or definite left ventricular hypertrophy by Estes’ criteria.
 
 Exercise data are: *maximal heart rate*, *exercise-induced angina*, *slope of the peak exercise ST segment* (upsloping, flat or downsloping), *exercise thallium scintigraphic defects* (fixed, reversible or none).
 
 Fluoroscopic data are the *number of major vessels that appeared to contain calcium*.
+
 
 We note that the cut-off threshold for fasting blood sugar, which is 120 mg/dL in this 1989 dataset, might be lower according to current medical standards.
 
@@ -402,7 +401,7 @@ ggpairs(dat, columns=c("age", "max_heart_rate", "rest_blood_pressure"), aes(colo
   
 ```
 
-We can do linear regression controlling for age variable. The linear regression model of maximum heart rate as a dependent variable of age and heart disease predictors shows that with each additional year of age the maximum heart rate decreases by 0.8 bpm on average. For a given age, heart disease patients have, on average, 15.9 bpm lower maximum heart rate than those without heart disease.
+The linear regression model of maximum heart rate as a dependent variable of age and heart disease predictors shows that with each additional year of age the maximum heart rate decreases by 0.8 bpm on average. For a given age, heart disease patients have, on average, 15.9 bpm lower maximum heart rate than those without heart disease.
 
 ```{r echo=FALSE}
 lr_model <- lm(max_heart_rate ~ age + heart_disease_present, data=dat)
@@ -490,7 +489,7 @@ grid.arrange(p11, p12, p21, p22, ncol = 4)
 
 ### **Epidemiological Analysis**
 
-In this section, we will do odds ratio (OR) analysis of association between variables.
+In this section, we do odds ratio (OR) analysis of association between variables.
 
 #### **(Unadjusted) Odds Ratio** {.tabset}
 
@@ -498,11 +497,11 @@ The outcome of interest is heart disease, and the exposures are: sex, fasting gl
 
 The results are summarized in a table output and illustrated by barplot with $95\%$ condifence interval.
 
-Regarding the **gender** of individuals, the odds of heart disease in males is $3.5$ times that in females.
+* Regarding the **sex** of individuals, the odds of heart disease in males is $3.5$ times that in females.
 
-Compared to individuals with normal **fasting blood sugar** level, those with high level have $1.15$ times the odds of heart disease. However, this difference is not statistically significant, the data do not support a clear association between high fasting blood sugar level and heart disease risk.
+* Compared to individuals with normal **fasting blood sugar** level, those with high level have $1.15$ times the odds of heart disease. However, this difference is not statistically significant, the data do not support a clear association between high fasting blood sugar level and heart disease risk.
 
-Odds of heart disease in individuals who experience **exercise induced angina** is $7.3$ times higher than in those who do not experience exercise induced angina.
+* Odds of heart disease in individuals who experience **exercise induced angina** is $7.3$ times higher than in those who do not experience exercise induced angina.
 
 ```{r echo=FALSE, oods-ratio-gender}
 
@@ -755,6 +754,8 @@ We use logistic regression, and models of higher capacity capable of learning no
 We use the parsnip package of tidymodels to train the models, and the dials package to do grid search for hyperparameter tuning.
 
 #### **Logistic Regression**
+
+Dropping age, resting electrocardiogram results and slope predictors improves the performance of logistic regression.
 
 ```{r}
 

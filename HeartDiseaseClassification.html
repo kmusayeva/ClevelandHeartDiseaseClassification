@@ -11,7 +11,7 @@
 
 <meta name="author" content="Khadija Musayeva" />
 
-<meta name="date" content="2025-04-16" />
+<meta name="date" content="2025-04-17" />
 
 <title>Heart disease analysis in R</title>
 
@@ -189,7 +189,7 @@ pre code {
 
 <h1 class="title toc-ignore">Heart disease analysis in R</h1>
 <h4 class="author">Khadija Musayeva</h4>
-<h4 class="date">2025-04-16</h4>
+<h4 class="date">2025-04-17</h4>
 
 </div>
 
@@ -217,13 +217,10 @@ myocardial infarction or known valvular or cardiomyopathic disease.</p>
 blood pressure</em>, <em>chest pain type</em> classified as typical
 angina, atypical angina, nonanginal, asymptomatic.</p>
 <p>Routine test data are: <em>serum cholesterol</em>, <em>fasting blood
-sugar</em> &gt;120 mg/dl and <em>electrocardiographic results</em> at
-rest classified as (1) normal; (2) ST-T-wave abnormality; or (3)
+sugar</em> &gt;120 mg/dl and <em>electrocardiographic results at
+rest</em> classified as (1) normal; (2) ST-T-wave abnormality; or (3)
 probable or definite left ventricular hypertrophy by Estes’
 criteria.</p>
-<p>Noninvasive test data are: <em>exercise electrocardiogram</em>,
-exercisethallium scintigraphy and <em>fluoroscopy for coronary
-calcium</em>.</p>
 <p>Exercise data are: <em>maximal heart rate</em>, <em>exercise-induced
 angina</em>, <em>slope of the peak exercise ST segment</em> (upsloping,
 flat or downsloping), <em>exercise thallium scintigraphic defects</em>
@@ -808,12 +805,11 @@ conditioned on heart disease variable. Independent of heart condition,
 maximum heart rate decreases with age, and those of individuals with
 heart disease tend to be lower.</p>
 <p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-18-1.png" width="960" /></p>
-<p>We can do linear regression controlling for age variable. The linear
-regression model of maximum heart rate as a dependent variable of age
-and heart disease predictors shows that with each additional year of age
-the maximum heart rate decreases by 0.8 bpm on average. For a given age,
-heart disease patients have, on average, 15.9 bpm lower maximum heart
-rate than those without heart disease.</p>
+<p>The linear regression model of maximum heart rate as a dependent
+variable of age and heart disease predictors shows that with each
+additional year of age the maximum heart rate decreases by 0.8 bpm on
+average. For a given age, heart disease patients have, on average, 15.9
+bpm lower maximum heart rate than those without heart disease.</p>
 <pre><code>## 
 ## Call:
 ## lm(formula = max_heart_rate ~ age + heart_disease_present, data = dat)
@@ -853,7 +849,7 @@ have heart disease.</strong></p>
 </div>
 <div id="epidemiological-analysis" class="section level3">
 <h3><strong>Epidemiological Analysis</strong></h3>
-<p>In this section, we will do odds ratio (OR) analysis of association
+<p>In this section, we do odds ratio (OR) analysis of association
 between variables.</p>
 <div id="unadjusted-odds-ratio" class="section level4 tabset">
 <h4 class="tabset"><strong>(Unadjusted) Odds Ratio</strong></h4>
@@ -863,19 +859,21 @@ and nuclear stress test.</p>
 <p>The results are summarized in a table output and illustrated by
 barplot with <span class="math inline">\(95\%\)</span> condifence
 interval.</p>
-<p>Regarding the <strong>gender</strong> of individuals, the odds of
+<ul>
+<li><p>Regarding the <strong>sex</strong> of individuals, the odds of
 heart disease in males is <span class="math inline">\(3.5\)</span> times
-that in females.</p>
-<p>Compared to individuals with normal <strong>fasting blood
+that in females.</p></li>
+<li><p>Compared to individuals with normal <strong>fasting blood
 sugar</strong> level, those with high level have <span
 class="math inline">\(1.15\)</span> times the odds of heart disease.
 However, this difference is not statistically significant, the data do
 not support a clear association between high fasting blood sugar level
-and heart disease risk.</p>
-<p>Odds of heart disease in individuals who experience <strong>exercise
-induced angina</strong> is <span class="math inline">\(7.3\)</span>
-times higher than in those who do not experience exercise induced
-angina.</p>
+and heart disease risk.</p></li>
+<li><p>Odds of heart disease in individuals who experience
+<strong>exercise induced angina</strong> is <span
+class="math inline">\(7.3\)</span> times higher than in those who do not
+experience exercise induced angina.</p></li>
+</ul>
 <div id="plot" class="section level5">
 <h5>Plot</h5>
 <p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-21-1.png" width="1920" /></p>
@@ -1568,6 +1566,8 @@ categorical variables.</p>
 dials package to do grid search for hyperparameter tuning.</p>
 <div id="logistic-regression" class="section level4">
 <h4><strong>Logistic Regression</strong></h4>
+<p>Dropping age, resting electrocardiogram results and slope predictors
+improves the performance of logistic regression.</p>
 <pre class="r"><code>ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
 
 dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% step_impute_knn(all_predictors())
