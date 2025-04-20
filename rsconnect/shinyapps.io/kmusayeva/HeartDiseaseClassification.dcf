@@ -5,6 +5,6 @@ account: kmusayeva
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14545815
-bundleId: 10130924
+bundleId: 10131104
 url: https://kmusayeva.shinyapps.io/HeartDiseaseClassification/
 version: 1

@@ -6,7 +6,7 @@ model <- readRDS("heart_disease_model.rds")
 
 # Define UI
 ui <- fluidPage(
-  titlePanel("Heart Disease Prediction (Logistic Regression)"),
+  titlePanel("Heart Disease Prediction"),
   
   sidebarLayout(
     sidebarPanel(

@@ -152,7 +152,7 @@ grid.arrange(p1, p2, ncol = 2)
 
 #### **Categorical Variable**
 
-The following plot illustrates the distribution of observations across all categorical variables. We see that heart disease of some gravity is present in $46\%$, almost half of the individuals and $4\%$ percent of these individuals have severe case of heart disease. There are more males than females in this dataset: $68\%$ of observations.
+The following plot illustrates the distribution of observations across categorical variables. We see that heart disease of some gravity is present in $46\%$, almost half of the individuals and $4\%$ percent of these individuals have severe case of heart disease. There are more males than females in this dataset: $68\%$ of observations.
 
 ```{r echo=FALSE, fig.width=15, fig.height=10}
 # Select categorical variables
@@ -189,7 +189,7 @@ ggplot(long_dat, aes(x = value, y = after_stat(prop), fill=variable)) +
 
 ```
 
-#### **The prevalence of heart disease cases across all categorical variables.**
+#### **The prevalence of heart disease cases across categorical variables.**
 
 The following plot shows that $55\%$ of males have heart disease. Heart disease is present in $73\%$ of asymptomatic cases. $31\%$ of individuals who does not experience chest pain during physical exertion, at the $120$ mg/dL cut-off threshold, almost half of the individuals below the threshold of $120$ mg/dL, $37\%$ of patients with normal electrocardiographic results, $31\%$ of patients with normal nuclear stress test results have heart disease.
 
@@ -755,13 +755,16 @@ We use the parsnip package of tidymodels to train the models, and the dials pack
 
 #### **Logistic Regression**
 
-Dropping age, resting electrocardiogram results and slope predictors improves the performance of logistic regression.
+Logistic regression models log odds of heart disease as a linear combination of predictors.
+
+Dropping age, resting electrocardiogram results and slope predictors improves predictive performance of logistic regression.
 
 ```{r}
 
 ground_truth <- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
 
-dat_recipe <- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %>% step_impute_knn(all_predictors())
+dat_recipe <- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %>% 
+  step_impute_knn(all_predictors()) 
 
 lr_model <- logistic_reg() %>%  set_engine("glm") %>% set_mode("classification") 
 
@@ -779,9 +782,17 @@ lr_result <- evaluate_model_fit(ground_truth, lr_probs$.pred_1)
 
 #### **Random Forest**
 
+Random Forest is an ensemble method that builds multiple de-correlated decision trees using two sources of randomness:
+(1) each tree is trained on a bootstrap sample (a random subsample with replacement) of the training data, and
+(2) at each split in a tree, a random subset of predictors is considered.
+The final prediction is made by majority vote for classification. 
+
+
+
 ```{r}
 
-dat_recipe <- recipe(heart_disease_present ~ age +sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + restecg + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) 
+dat_recipe <- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %>% 
+  step_impute_knn(all_predictors()) 
 
 rf_model <- rand_forest(
   mtry = tune(),    # Number of predictors sampled at each split
@@ -796,9 +807,9 @@ rf_workflow <- workflow() %>%
   add_model(rf_model)
 
 rf_grid <- expand.grid(
-  mtry = c(2, 3, 4, 5, 7),
-  trees = c(100, 500, 750, 1000),
-  min_n = c(5, 10, 15)
+  mtry = c(1, 2, 3, 4),
+  trees = c(25, 50, 70, 100, 300, 500),
+  min_n = c(3, 5, 10, 15)
 )
 
 rf_tune_results <- rf_workflow %>% 
@@ -810,6 +821,8 @@ rf_workflow <- rf_workflow %>% finalize_workflow(param_final)
 
 rf_fit <- rf_workflow %>% last_fit(dat_split)
 
+# rf_fit %>%  extract_fit_parsnip() %>% vip::vip()  # Visualize feature importance
+
 rf_probs <- as.data.frame(rf_fit$.predictions)$.pred_1
 
 rf_result <- evaluate_model_fit(ground_truth, rf_probs)
@@ -819,9 +832,13 @@ rf_result <- evaluate_model_fit(ground_truth, rf_probs)
 
 #### **Extreme Gradient Boosting**
 
-```{r, cache=TRUE}
+Boosting sequentially applies a weak learner to a weighted version of the training data, where misclassified examples receive higher weights. Thus, in each iteration, the learning algorithm focuses more on the previously misclassified examples. The final model is a weighted combination of the weak learners, where higher weights are given to the more accurate ones.
+Gradient boosting extends this idea by fitting a new model to the negative gradient of a differentiable loss function at each iteration. Extreme gradient boosting is a scalable and efficient implementation of gradient boosting that includes additional regularization techniques.
 
-dat_recipe <- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + restecg + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%>% 
+
+```{r}
+
+dat_recipe <- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%>% 
   step_impute_knn(all_predictors()) %>%  
   step_dummy(all_nominal_predictors())
 
@@ -835,6 +852,8 @@ xgb_spec <- boost_tree(
 ) %>% 
   set_mode("classification") %>% 
   set_engine("xgboost", eval_metric = "error")
+
+
 
 # Create a workflow that bundles the recipe and model.
 wflow <- workflow() %>% 

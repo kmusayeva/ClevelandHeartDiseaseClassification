@@ -11,7 +11,7 @@
 
 <meta name="author" content="Khadija Musayeva" />
 
-<meta name="date" content="2025-04-17" />
+<meta name="date" content="2025-04-20" />
 
 <title>Heart disease analysis in R</title>
 
@@ -189,7 +189,7 @@ pre code {
 
 <h1 class="title toc-ignore">Heart disease analysis in R</h1>
 <h4 class="author">Khadija Musayeva</h4>
-<h4 class="date">2025-04-17</h4>
+<h4 class="date">2025-04-20</h4>
 
 </div>
 
@@ -668,18 +668,18 @@ class="math inline">\(1\)</span> in female without heart disease.</p>
 <div id="categorical-variable" class="section level4">
 <h4><strong>Categorical Variable</strong></h4>
 <p>The following plot illustrates the distribution of observations
-across all categorical variables. We see that heart disease of some
-gravity is present in <span class="math inline">\(46\%\)</span>, almost
-half of the individuals and <span class="math inline">\(4\%\)</span>
-percent of these individuals have severe case of heart disease. There
-are more males than females in this dataset: <span
+across categorical variables. We see that heart disease of some gravity
+is present in <span class="math inline">\(46\%\)</span>, almost half of
+the individuals and <span class="math inline">\(4\%\)</span> percent of
+these individuals have severe case of heart disease. There are more
+males than females in this dataset: <span
 class="math inline">\(68\%\)</span> of observations.</p>
 <p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-8-1.png" width="1440" /></p>
 </div>
 <div
-id="the-prevalence-of-heart-disease-cases-across-all-categorical-variables."
+id="the-prevalence-of-heart-disease-cases-across-categorical-variables."
 class="section level4">
-<h4><strong>The prevalence of heart disease cases across all categorical
+<h4><strong>The prevalence of heart disease cases across categorical
 variables.</strong></h4>
 <p>The following plot shows that <span
 class="math inline">\(55\%\)</span> of males have heart disease. Heart
@@ -1566,11 +1566,14 @@ categorical variables.</p>
 dials package to do grid search for hyperparameter tuning.</p>
 <div id="logistic-regression" class="section level4">
 <h4><strong>Logistic Regression</strong></h4>
+<p>Logistic regression models log odds of heart disease as a linear
+combination of predictors.</p>
 <p>Dropping age, resting electrocardiogram results and slope predictors
-improves the performance of logistic regression.</p>
+improves predictive performance of logistic regression.</p>
 <pre class="r"><code>ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
 
-dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% step_impute_knn(all_predictors())
+dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% 
+  step_impute_knn(all_predictors()) 
 
 lr_model &lt;- logistic_reg() %&gt;%  set_engine(&quot;glm&quot;) %&gt;% set_mode(&quot;classification&quot;) 
 
@@ -1586,7 +1589,14 @@ lr_result &lt;- evaluate_model_fit(ground_truth, lr_probs$.pred_1)</code></pre>
 </div>
 <div id="random-forest" class="section level4">
 <h4><strong>Random Forest</strong></h4>
-<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age +sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + restecg + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) 
+<p>Random Forest is an ensemble method that builds multiple
+de-correlated decision trees using two sources of randomness: (1) each
+tree is trained on a bootstrap sample (a random subsample with
+replacement) of the training data, and (2) at each split in a tree, a
+random subset of predictors is considered. The final prediction is made
+by majority vote for classification.</p>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% 
+  step_impute_knn(all_predictors()) 
 
 rf_model &lt;- rand_forest(
   mtry = tune(),    # Number of predictors sampled at each split
@@ -1601,9 +1611,9 @@ rf_workflow &lt;- workflow() %&gt;%
   add_model(rf_model)
 
 rf_grid &lt;- expand.grid(
-  mtry = c(2, 3, 4, 5, 7),
-  trees = c(100, 500, 750, 1000),
-  min_n = c(5, 10, 15)
+  mtry = c(1, 2, 3, 4),
+  trees = c(25, 50, 70, 100, 300, 500),
+  min_n = c(3, 5, 10, 15)
 )
 
 rf_tune_results &lt;- rf_workflow %&gt;% 
@@ -1615,13 +1625,25 @@ rf_workflow &lt;- rf_workflow %&gt;% finalize_workflow(param_final)
 
 rf_fit &lt;- rf_workflow %&gt;% last_fit(dat_split)
 
+# rf_fit %&gt;%  extract_fit_parsnip() %&gt;% vip::vip()  # Visualize feature importance
+
 rf_probs &lt;- as.data.frame(rf_fit$.predictions)$.pred_1
 
 rf_result &lt;- evaluate_model_fit(ground_truth, rf_probs)</code></pre>
 </div>
 <div id="extreme-gradient-boosting" class="section level4">
 <h4><strong>Extreme Gradient Boosting</strong></h4>
-<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + restecg + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%&gt;% 
+<p>Boosting sequentially applies a weak learner to a weighted version of
+the training data, where misclassified examples receive higher weights.
+Thus, in each iteration, the learning algorithm focuses more on the
+previously misclassified examples. The final model is a weighted
+combination of the weak learners, where higher weights are given to the
+more accurate ones. Gradient boosting extends this idea by fitting a new
+model to the negative gradient of a differentiable loss function at each
+iteration. Extreme gradient boosting is a scalable and efficient
+implementation of gradient boosting that includes additional
+regularization techniques.</p>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%&gt;% 
   step_impute_knn(all_predictors()) %&gt;%  
   step_dummy(all_nominal_predictors())
 
@@ -1635,6 +1657,8 @@ xgb_spec &lt;- boost_tree(
 ) %&gt;% 
   set_mode(&quot;classification&quot;) %&gt;% 
   set_engine(&quot;xgboost&quot;, eval_metric = &quot;error&quot;)
+
+
 
 # Create a workflow that bundles the recipe and model.
 wflow &lt;- workflow() %&gt;% 
