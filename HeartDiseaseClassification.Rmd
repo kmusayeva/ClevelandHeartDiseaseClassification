@@ -780,6 +780,56 @@ lr_result <- evaluate_model_fit(ground_truth, lr_probs$.pred_1)
 
 ```
 
+#### **Support vector classifier**
+
+Support vector machine is a maximum-margin hyperplane classifier. Its strength lies in its ability to find such a hyperplane even in high- or infinite-dimensional feature spaces. An infinite-dimensional feature space can be implicitly created using a kernel function, such as the radial basis function kernel, which is one of the most widely used kernels. This implies that if the data is not separable in the input space, it might become so in the feature space.
+
+
+```{r}
+
+dat_recipe <- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %>%
+  step_impute_knn(all_predictors()) %>%
+  step_normalize(all_numeric_predictors())  
+
+svm_model <- svm_rbf(
+  cost = tune(),        # Regularization parameter
+  rbf_sigma = tune()    # RBF kernel parameter (sigma = 1/(2*sigma^2))
+) %>%
+  set_engine("kernlab") %>%
+  set_mode("classification")
+
+svm_workflow <- workflow() %>%
+  add_recipe(dat_recipe) %>%
+  add_model(svm_model)
+
+svm_grid <- grid_regular(
+  cost(range = c(-3, 3)),         # log2 scale: 2^-3 to 2^3
+  rbf_sigma(range = c(-3, 1)),    # log2 scale: 2^-3 to 2^1
+  levels = 5
+)
+
+svm_tune_results <- svm_workflow %>%
+  tune_grid(
+    resamples = dat_cv,
+    grid = svm_grid,
+    metrics = metric_set(accuracy)
+  )
+
+
+param_final <- svm_tune_results %>% select_best(metric = "accuracy")
+
+svm_workflow <- svm_workflow %>% finalize_workflow(param_final)
+
+svm_fit <- svm_workflow %>% last_fit(dat_split)
+
+svm_probs <- as.data.frame(svm_fit$.predictions)$.pred_1
+
+svm_result <- evaluate_model_fit(ground_truth, svm_probs)
+
+```
+
+
+
 #### **Random Forest**
 
 Random Forest is an ensemble method that builds multiple de-correlated decision trees using two sources of randomness:
@@ -836,7 +886,7 @@ Boosting sequentially applies a weak learner to a weighted version of the traini
 Gradient boosting extends this idea by fitting a new model to the negative gradient of a differentiable loss function at each iteration. Extreme gradient boosting is a scalable and efficient implementation of gradient boosting that includes additional regularization techniques.
 
 
-```{r}
+```{r, cache=TRUE}
 
 dat_recipe <- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train)%>% 
   step_impute_knn(all_predictors()) %>%  
@@ -901,7 +951,6 @@ xgb_result <- evaluate_model_fit(ground_truth, xgb_probs)
 
 ```
 
-
 <br>
 
 
@@ -914,6 +963,7 @@ Logistic regression on this small dataset is superior to random forest and XGBoo
 results_df <- tribble(
   ~Model,         ~Accuracy, ~Sensitivity, ~Specificity, ~F1,       ~AUC,      ~Matthews,
   "Logistic Reg", lr_result$acc, lr_result$sensi, lr_result$speci, lr_result$f1, lr_result$aucroc, lr_result$matcc,
+  "Support Vector Classifier", svm_result$acc, svm_result$sensi, svm_result$speci, svm_result$f1, svm_result$aucroc, svm_result$matcc,
   "Random Forest", rf_result$acc, rf_result$sensi, rf_result$speci, rf_result$f1, rf_result$aucroc, rf_result$matcc,
   "XGBoost",       xgb_result$acc, xgb_result$sensi, xgb_result$speci, xgb_result$f1, xgb_result$aucroc, xgb_result$matcc
 )
@@ -939,24 +989,28 @@ ggplot(results_long, aes(x = Metric, y = Value, fill = Model)) +
 
 p1 <- plot_roc(data.frame(ground_truth, probs=lr_probs$.pred_1), "Logistic Regression")
 
-p2 <-  plot_roc(data.frame(ground_truth, probs=rf_probs), "Random Forest")
+p2 <-  plot_roc(data.frame(ground_truth, probs=svm_probs), "Support Vector Machine")
 
-p3 <-  plot_roc(data.frame(ground_truth, probs=xgb_probs), "XGB")
+p3 <-  plot_roc(data.frame(ground_truth, probs=rf_probs), "Random Forest")
 
-grid.arrange(p1, p2, p3, ncol = 3)
+p4 <-  plot_roc(data.frame(ground_truth, probs=xgb_probs), "XGB")
+
+grid.arrange(p1, p2, p3, p4, ncol = 4)
 
 ```
 
 
-```{r echo=FALSE, fig.height=5, fig.width=13, warning=FALSE}
+```{r echo=FALSE, fig.height=4, fig.width=13, warning=FALSE}
 
 p1 <- plot_confusion_matrix(ground_truth, lr_result$pred_class, round(lr_result$matcc, 2), "Logistic regression")
 
-p2 <- plot_confusion_matrix(ground_truth, rf_result$pred_class, round(rf_result$matcc, 2), "Random forest")
+p2 <- plot_confusion_matrix(ground_truth, rf_result$pred_class, round(rf_result$matcc, 2), "Support vector machine")
 
-p3 <- plot_confusion_matrix(ground_truth, xgb_result$pred_class, round(xgb_result$matcc, 2), "XGB")
+p3 <- plot_confusion_matrix(ground_truth, rf_result$pred_class, round(rf_result$matcc, 2), "Random forest")
 
-grid.arrange(p1, p2, p3, ncol = 3)
+p4 <- plot_confusion_matrix(ground_truth, xgb_result$pred_class, round(xgb_result$matcc, 2), "XGB")
+
+grid.arrange(p1, p2, p3, p4, ncol = 4)
 
 ```
 
@@ -964,7 +1018,7 @@ grid.arrange(p1, p2, p3, ncol = 3)
 
 #### **Incorrect predictions of logistic regression**
 
-Now let us look at the distribution of incorrect predictions of logistic regression. In the confusion matrix above, we see that logistic regression made $4$ false positive and $6$ false negative predictions. Since maximum heart rate and old peak are relatively more discriminating predictors among the continuous variables we considered, below we overlay the incorrect predictions over the respective distributions of these variables. 
+Now let us look at the distribution of incorrect predictions of logistic regression. In the confusion matrix above, we see that logistic regression made $4$ false positive and $4$ false negative predictions. Since maximum heart rate and old peak are relatively more discriminating predictors among the continuous variables we considered, below we overlay the incorrect predictions over the respective distributions of these variables. 
 
 ```{r echo=FALSE, incorrect-preds, fig.height=5, fig.width=15, warning=FALSE}
 
@@ -995,7 +1049,7 @@ From our statistical analysis, we saw that individuals with heart disease tend t
 
 #### **Positive predictive value and negative predictive value of logistic regression**
 
-The positive predictive value (PPV) is the probability that an individual predicted to have heart disease truly has heart disease, while the negative predictive value (NPV) is the probability that an individual predicted not to have heart disease truly does not have heart disease. Considering our logistic regression model as a diagnostic tool, the probability that an individual predicted to have heart disease have heart disease is $88\%$ and the probability that an individual predicted not to have heart disease does not have heart disease is $98\%$.
+The positive predictive value (PPV) is the probability that an individual predicted to have heart disease truly has heart disease, while the negative predictive value (NPV) is the probability that an individual predicted not to have heart disease truly does not have heart disease. Considering our logistic regression model as a diagnostic tool, the probability that an individual predicted to have heart disease have heart disease is $89\%$ and the probability that an individual predicted not to have heart disease does not have heart disease is $90\%$.
 
 ```{r}
 

@@ -1587,6 +1587,54 @@ lr_probs &lt;- predict(lr_fit, dat_test, type = &quot;prob&quot;)
 
 lr_result &lt;- evaluate_model_fit(ground_truth, lr_probs$.pred_1)</code></pre>
 </div>
+<div id="support-vector-classifier" class="section level4">
+<h4><strong>Support vector classifier</strong></h4>
+<p>Support vector machine is a maximum-margin hyperplane classifier. Its
+strength lies in its ability to find such a hyperplane even in high- or
+infinite-dimensional feature spaces. An infinite-dimensional feature
+space can be implicitly created using a kernel function, such as the
+radial basis function kernel, which is one of the most widely used
+kernels. This implies that if the data is not separable in the input
+space, it might become so in the feature space.</p>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;%
+  step_impute_knn(all_predictors()) %&gt;%
+  step_normalize(all_numeric_predictors())  
+
+svm_model &lt;- svm_rbf(
+  cost = tune(),        # Regularization parameter
+  rbf_sigma = tune()    # RBF kernel parameter (sigma = 1/(2*sigma^2))
+) %&gt;%
+  set_engine(&quot;kernlab&quot;) %&gt;%
+  set_mode(&quot;classification&quot;)
+
+svm_workflow &lt;- workflow() %&gt;%
+  add_recipe(dat_recipe) %&gt;%
+  add_model(svm_model)
+
+svm_grid &lt;- grid_regular(
+  cost(range = c(-3, 3)),         # log2 scale: 2^-3 to 2^3
+  rbf_sigma(range = c(-3, 1)),    # log2 scale: 2^-3 to 2^1
+  levels = 5
+)
+
+svm_tune_results &lt;- svm_workflow %&gt;%
+  tune_grid(
+    resamples = dat_cv,
+    grid = svm_grid,
+    metrics = metric_set(accuracy)
+  )
+
+
+param_final &lt;- svm_tune_results %&gt;% select_best(metric = &quot;accuracy&quot;)
+
+svm_workflow &lt;- svm_workflow %&gt;% finalize_workflow(param_final)
+
+svm_fit &lt;- svm_workflow %&gt;% last_fit(dat_split)
+
+svm_probs &lt;- as.data.frame(svm_fit$.predictions)$.pred_1
+
+svm_result &lt;- evaluate_model_fit(ground_truth, svm_probs)</code></pre>
+</div>
 <div id="random-forest" class="section level4">
 <h4><strong>Random Forest</strong></h4>
 <p>Random Forest is an ensemble method that builds multiple
@@ -1714,6 +1762,7 @@ considered as visualized by the plots below.</p>
 <pre class="r"><code>results_df &lt;- tribble(
   ~Model,         ~Accuracy, ~Sensitivity, ~Specificity, ~F1,       ~AUC,      ~Matthews,
   &quot;Logistic Reg&quot;, lr_result$acc, lr_result$sensi, lr_result$speci, lr_result$f1, lr_result$aucroc, lr_result$matcc,
+  &quot;Support Vector Classifier&quot;, svm_result$acc, svm_result$sensi, svm_result$speci, svm_result$f1, svm_result$aucroc, svm_result$matcc,
   &quot;Random Forest&quot;, rf_result$acc, rf_result$sensi, rf_result$speci, rf_result$f1, rf_result$aucroc, rf_result$matcc,
   &quot;XGBoost&quot;,       xgb_result$acc, xgb_result$sensi, xgb_result$speci, xgb_result$f1, xgb_result$aucroc, xgb_result$matcc
 )
@@ -1732,9 +1781,9 @@ ggplot(results_long, aes(x = Metric, y = Value, fill = Model)) +
   ) +
   theme_minimal()+     
   theme(plot.title = element_text(hjust = 0.5, size = 16))</code></pre>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-31-1.png" width="960" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-32-1.png" width="1728" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-33-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-32-1.png" width="960" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-33-1.png" width="1728" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-34-1.png" width="1248" /></p>
 <p><br></p>
 <div id="incorrect-predictions-of-logistic-regression"
 class="section level4">
@@ -1742,7 +1791,7 @@ class="section level4">
 <p>Now let us look at the distribution of incorrect predictions of
 logistic regression. In the confusion matrix above, we see that logistic
 regression made <span class="math inline">\(4\)</span> false positive
-and <span class="math inline">\(6\)</span> false negative predictions.
+and <span class="math inline">\(4\)</span> false negative predictions.
 Since maximum heart rate and old peak are relatively more discriminating
 predictors among the continuous variables we considered, below we
 overlay the incorrect predictions over the respective distributions of
@@ -1776,9 +1825,9 @@ while the negative predictive value (NPV) is the probability that an
 individual predicted not to have heart disease truly does not have heart
 disease. Considering our logistic regression model as a diagnostic tool,
 the probability that an individual predicted to have heart disease have
-heart disease is <span class="math inline">\(88\%\)</span> and the
+heart disease is <span class="math inline">\(89\%\)</span> and the
 probability that an individual predicted not to have heart disease does
-not have heart disease is <span class="math inline">\(98\%\)</span>.</p>
+not have heart disease is <span class="math inline">\(90\%\)</span>.</p>
 <pre class="r"><code>cm &lt;- confusionMatrix(lr_result$pred_class, ground_truth, positive = &quot;1&quot;)
 metrics &lt;- cm$byClass
 ppv &lt;- metrics[3]

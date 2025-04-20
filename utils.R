@@ -41,7 +41,7 @@ plot_confusion_matrix <- function(actual, predicted, eval_measure, title, positi
     labs(title = title, x = "Ground_truth", y = "Predicted") +
     theme(plot.title = element_text(hjust = 0.5), legend.position = "none")+
     xlab("Ground truth") +
-    labs(title = paste(title, "\n\n MCC:", eval_measure, ", Sensi:", sensi, ", Speci:", speci))+
+    labs(title = paste(title, "\n\n Sensi:", sensi, ", Speci:", speci))+
     theme(plot.title = element_text(hjust = 0.5, size = 16))
   
   
