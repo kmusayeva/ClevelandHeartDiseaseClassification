@@ -22,7 +22,7 @@ body {
 
 This RMarkdown file contains contains data exploration, data visualization, statistical/epidemiological and predictive modeling analyses of Cleveland heart disease data. 
 
-**Data Description:**
+**Data Description**
 
 The following description is from the paper @Detrano89.
 
@@ -338,7 +338,7 @@ grid.arrange(p1, p2, nrow=2)
 
 Next, we analyze pairwise relationships between some of these variables conditioned on heart disease variable. 
 
-Independent of heart condition, maximum heart rate decreases with age, and those of individuals with heart disease tend to be lower. 
+Independent of heart condition, maximum heart rate decreases with age and that of individuals with heart disease tend to be lower. 
 
 Resting blood pressure and cholesterol levels increase with age, and this association is stronger for non-heart disease individuals.
 
