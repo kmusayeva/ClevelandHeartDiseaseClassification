@@ -1,10 +1,12 @@
 ---
-title: "Heart disease analysis in R"
+title: "Heart Disease Data Analysis in R"
 author: "Khadija Musayeva"
 date: "`r Sys.Date()`"
 output:
   html_document:
     self_contained: false
+    toc: true
+    toc_depth: 4
 bibliography: ref.bib  
 ---
 
@@ -30,16 +32,16 @@ Clinical variables are: *age*, *sex*, *systolic blood pressure*, *chest pain typ
 
 Routine test data are: *serum cholesterol*, *fasting blood sugar* \>120 mg/dl and *electrocardiographic results at rest* classified as (1) normal; (2) ST-T-wave abnormality; or (3) probable or definite left ventricular hypertrophy by Estes’ criteria.
 
-Exercise data are: *maximal heart rate*, *exercise-induced angina*, *slope of the peak exercise ST segment* (upsloping, flat or downsloping), *exercise thallium scintigraphic defects* (fixed, reversible or none).
+Exercise data are: *maximal heart rate*, *exercise-induced angina*, *slope of the peak exercise ST segment* (upsloping, flat or downsloping), *exercise thallium scintigraphic defects* (fixed, reversible or none), *ST depression induced by exercise relative to rest*.
 
 Fluoroscopic data are the *number of major vessels that appeared to contain calcium*.
 
 
 We note that the cut-off threshold for fasting blood sugar, which is 120 mg/dL in this 1989 dataset, might be lower according to current medical standards.
 
-## Data preprocessing and analysis
+# Data Analysis
 
-### Install and load packages
+**Install and load packages**
 
 ```{r message=FALSE, warning=FALSE}
 ### we use pacman to install and load the required packages
@@ -50,7 +52,7 @@ source("utils.R")
 
 ```
 
-### Load the data
+## Load and preprocess the data
 
 Read the data and check its dimensions.
 
@@ -65,7 +67,7 @@ What are the types of these variables?
 sapply(dat, class)
 ```
 
-We will rename the columns to render to match more or less their description.
+We will rename the columns so that they match more or less their descriptions.
 
 ```{r}
 
@@ -117,22 +119,34 @@ dat %<>%
   )
 
 
+
+```
+
+
+Have a glimpse of data:
+
+```{r}
+
+
 kable(head(dat), "html") %>%
   kable_styling(font_size = 12, stripe_color = "gray!10") %>%
   scroll_box(width = "100%", height = "300px")
 
 ```
 
+
+
 <br>
 
+## Missing values
 
-The plot below indicates that there are $6$ missing values: $2$ in nuclear stress test results and $4$ in number of major vessels.
+The plot below shows that there are $6$ missing values: $2$ in nuclear stress test results and $4$ in number of major vessels.
 
 ```{r echo=FALSE, miss-plot, fig.width=6, fig.height=5}
 vis_miss(dat)
 ```
 
-The following plots show the distribution of the missing values with respect to two variables: sex and heart disease.
+We plot the distribution of the missing values with respect to two variables: sex and heart disease.
 
 The missing values of number of major vessels concern only males mostly without heart disease, while those in the results of nuclear stress test are distributed among both: $1$ in male with heart disease and $1$ in female without heart disease.
 
@@ -148,9 +162,9 @@ grid.arrange(p1, p2, ncol = 2)
 
 <br>
 
-### **Visualization**
+## Visualization
 
-#### **Categorical Variable**
+### **Categorical Variables**
 
 The following plot illustrates the distribution of observations across categorical variables. We see that heart disease of some gravity is present in $46\%$, almost half of the individuals and $4\%$ percent of these individuals have severe case of heart disease. There are more males than females in this dataset: $68\%$ of observations.
 
@@ -189,7 +203,9 @@ ggplot(long_dat, aes(x = value, y = after_stat(prop), fill=variable)) +
 
 ```
 
-#### **The prevalence of heart disease cases across categorical variables.**
+#### **Prevalence of Heart Disease**
+
+We now compute the prevalence of heart disease across categorcial variables. 
 
 The following plot shows that $55\%$ of males have heart disease. Heart disease is present in $73\%$ of asymptomatic cases. $31\%$ of individuals who does not experience chest pain during physical exertion, at the $120$ mg/dL cut-off threshold, almost half of the individuals below the threshold of $120$ mg/dL, $37\%$ of patients with normal electrocardiographic results, $31\%$ of patients with normal nuclear stress test results have heart disease.
 
@@ -238,7 +254,7 @@ ggplot(hd_pct, aes(x = value, y = pct, fill = variable)) +
 
 <br>
 
-#### **Distribution of age, cholesterol, maximum heart rate and resting blood pressure.**
+### **Continuous Variables**
 
 The distributions of age, cholesterol levels and resting blood pressure are almost bell shaped. The middle $50\%$ of age variable is somewhere between $50$ and $60$ years old, the maximum age is $77$ years old. The middle $50\%$ of cholesterol is between $211$ and $275$, the middle $50\%$ of maximum heart rate is between $134$ and $166$, and the middle $50\%$ of resting blood pressure is between $120$ and $140$. There is an outlier point in cholesterol variable with the value above $500$. In blood pressure variable the points with the value around $200$ stand out.
 
@@ -266,7 +282,7 @@ grid.arrange(p1_combined, p2_combined, p3_combined, p4_combined, ncol = 4)
 
 ```
 
-The following plot shows that there is not much difference between **cholesterol** levels across the levels of heart disease status.
+The following plot shows that there is not much difference between **cholesterol** levels across the levels of heart disease gravity. There is also a strong overlap between the distributions of cholesterol conditioned on the presence of heart disease.
 
 ```{r echo=FALSE, fig.height=7, fig.width=13, warning=FALSE}
 
@@ -277,7 +293,7 @@ p2 <- plot_exposure_disease(dat, "heart_disease_severity", "cholesterol", "Chole
 grid.arrange(p1, p2, nrow=2)
 ```
 
-Regarding the **blood pressure**, the distribution of the one corresponding to heart disease severity of 4 stands out, its median is much higher close to 150, and there is no much difference between those \<4.
+Regarding the **blood pressure**, the distribution of the one corresponding to heart disease severity of 4 stands out, its median is much higher close to 150, and there is no much difference between those \<4. As is the case with cholesterol, the distributions of resting blood pressure conditioned on the presence of heart disease overlap almost entirely.
 
 ```{r echo=FALSE, fig.height=7, fig.width=13, warning=FALSE}
 
@@ -302,46 +318,6 @@ grid.arrange(p1, p2, nrow=2)
 
 ```
 
-**Is the difference between the mean maximal heart rates of the two groups with and without heart disease statistically significant?**
-
-Checking for normality visually using qqplot shows that the maximal heart rate of group with no heart disease deviates from normality as it is also clear from the density plot above. The p-values obtained from Shapiro-Wilk test of normality also confirms this.
-
-```{r echo=FALSE, fig.height=4, fig.width=7}
-
-pvals <- dat %>%
-  group_by(heart_disease_present) %>%
-  summarise(p_value = shapiro.test(max_heart_rate)$p.value) %>%
-  mutate(
-    label = paste0("Heart disease present=", heart_disease_present, "\n(p = ", round(p_value, 3), ")")
-  )
-
-dat_labeled <- dat %>% select(c("max_heart_rate", "heart_disease_present")) %>% left_join(pvals, by = "heart_disease_present")
-
-ggplot(dat_labeled, aes(sample = max_heart_rate)) +
-  stat_qq() +
-  stat_qq_line() +
-  facet_wrap(~ label)+
-  labs(
-    x = "Theoretical Quantiles",
-    y = "Sample Quantiles",
-    title = "Q-Q plots of max heart rate by heart disease"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(plot.title = element_text(hjust = 0.5, size = 12))
-
-
-```
-
-Next, we use an F-test to test the assumption of equal variances between individuals with and without heart disease. It shows that the variances of two groups are unequal (p = 0.05), and thus we would be better off using Welch t-test to compare the maximum heart rate between individuals without heart disease and those with heart disease.
-
-**Welch t-test shows a significant difference in mean maximum heart rate between the two groups: the mean maximum heart rate is $158.4$ bpm in the no-disease group, compared to $139.3$ bpm in the heart disease group. The $95\%$ confidence interval for the difference in means is [-23.91, -14.33], indicating that individuals with heart disease tend to have significantly lower maximum heart rates.**
-
-```{r echo=FALSE}
-ftest <- var.test(max_heart_rate ~ heart_disease_present, data = dat)
-cat("Alternative hypothesis: true ratio of variances is not equal to 1, p-value:", round(ftest$p.value, 2), "\n")
-
-t.test(max_heart_rate ~ factor(heart_disease_present, levels=c(1, 0)), data = dat, var.equal = FALSE)
-```
 
 **The median age of individuals with heart disease is higher, close to 60**, than those without one, however overall these two class-conditional distributions overlap.
 
@@ -355,51 +331,24 @@ grid.arrange(p1, p2, nrow=2)
 
 ```
 
-According to Welch t-test the difference in the mean age between the two groups is statistically significant. The mean age is $56.6$ in the no-disease group, compared to $52.6$ in the heart disease group, and the $95\%$ confidence interval for the difference in means is [$2$, $6$], showing that individuals with heart disease tend to be of older age.
-
-```{r echo=FALSE, fig.height=4, fig.width=7}
-
-pvals <- dat %>%
-  group_by(heart_disease_present) %>%
-  summarise(p_value = shapiro.test(age)$p.value) %>%
-  mutate(
-    label = paste0("Heart disease present=", heart_disease_present, "\n(p = ", round(p_value, 3), ")")
-  )
-
-dat_labeled <- dat %>% select(c("age", "heart_disease_present")) %>% left_join(pvals, by = "heart_disease_present")
-
-ggplot(dat_labeled, aes(sample = age)) +
-  stat_qq() +
-  stat_qq_line() +
-  facet_wrap(~ label)+
-  labs(
-    x = "Theoretical Quantiles",
-    y = "Sample Quantiles",
-    title = "Q-Q plots of age by heart disease"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(plot.title = element_text(hjust = 0.5, size = 12))
-
-```
-
-```{r echo=FALSE}
-
-t.test(age ~ factor(heart_disease_present, levels=c(1, 0)), data = dat, var.equal = FALSE)
-
-```
 
 <br>
 
 #### **Pairwise Plots**
 
-Next, we analyze pairwise relationships between these variables conditioned on heart disease variable. Independent of heart condition, maximum heart rate decreases with age, and those of individuals with heart disease tend to be lower.
+Next, we analyze pairwise relationships between some of these variables conditioned on heart disease variable. 
+
+Independent of heart condition, maximum heart rate decreases with age, and those of individuals with heart disease tend to be lower. 
+
+Resting blood pressure and cholesterol levels increase with age, and this association is stronger for non-heart disease individuals.
 
 ```{r echo=FALSE, fig.height=5, fig.width=10, warning=FALSE}
 
-ggpairs(dat, columns=c("age", "max_heart_rate", "rest_blood_pressure"), aes(color=factor(heart_disease_present, levels=c(1, 0)), alpha=0.3),
+ggpairs(dat, columns=c("age", "max_heart_rate", "rest_blood_pressure", "cholesterol"), aes(color=factor(heart_disease_present, levels=c(1, 0)), alpha=0.3),
         lower=list(continuous="smooth"), diag=list(continuous="densityDiag"))
   
 ```
+
 
 The linear regression model of maximum heart rate as a dependent variable of age and heart disease predictors shows that with each additional year of age the maximum heart rate decreases by 0.8 bpm on average. For a given age, heart disease patients have, on average, 15.9 bpm lower maximum heart rate than those without heart disease.
 
@@ -408,6 +357,9 @@ lr_model <- lm(max_heart_rate ~ age + heart_disease_present, data=dat)
 summary(lr_model)
 ```
 
+<br>
+
+**Distribution of ST depression induced by exercise and number of major ca vessels**
 
 The following plots display the distributions of ST depression induced by exercise relative to rest, which is oldpeak variable, and the number of major vessels which appeared to contain calcium.
 
@@ -485,13 +437,100 @@ grid.arrange(p11, p12, p21, p22, ncol = 4)
 
 ```
 
+
 <br>
 
-### **Epidemiological Analysis**
 
-In this section, we do odds ratio (OR) analysis of association between variables.
+## Statistical Analysis
 
-#### **(Unadjusted) Odds Ratio** {.tabset}
+In this section, we do two or more group hypothesis tests, and also odds ratio (OR) analysis.
+
+
+### **Two group hypothesis test and linear trend test**
+
+
+We use Welch t-test to compare means of two groups with unequal variances.
+
+**Maximal heart rate**
+
+Question: Is there a statistically significant difference in the mean maximal heart rates between individuals with and without heart disease? 
+
+Answer: **Welch t-test shows a significant difference in mean maximum heart rate between the two groups: the mean maximum heart rate is $158.4$ bpm in the no-disease group, compared to $139.3$ bpm in the heart disease group. The $95\%$ confidence interval for the difference in means is [14.33, 23.91], indicating that individuals with heart disease tend to have significantly lower maximum heart rates.**
+
+```{r}
+ftest <- var.test(max_heart_rate ~ heart_disease_present, data = dat)
+cat("Alternative hypothesis: true ratio of variances is not equal to 1, p-value:", round(ftest$p.value, 2), "\n")
+
+t.test(max_heart_rate ~ heart_disease_present, data = dat, var.equal = FALSE)
+```
+
+**Age**
+
+Question: Is there a statistically significant difference in the mean age between individuals with and without heart disease?
+
+Answer: According to Welch t-test the difference in the mean age between the two groups is statistically significant. The mean age is $56.6$ in the no-disease group, compared to $52.6$ in the heart disease group, and the $95\%$ confidence interval for the difference in means is [$2$, $6$], showing that individuals with heart disease tend to be of slightly older age.
+
+```{r echo=FALSE, fig.height=4, fig.width=7}
+
+pvals <- dat %>%
+  group_by(heart_disease_present) %>%
+  summarise(p_value = shapiro.test(age)$p.value) %>%
+  mutate(
+    label = paste0("Heart disease present=", heart_disease_present, "\n(p = ", round(p_value, 3), ")")
+  )
+
+dat_labeled <- dat %>% select(c("age", "heart_disease_present")) %>% left_join(pvals, by = "heart_disease_present")
+
+# ggplot(dat_labeled, aes(sample = age)) +
+#   stat_qq() +
+#   stat_qq_line() +
+#   facet_wrap(~ label)+
+#   labs(
+#     x = "Theoretical Quantiles",
+#     y = "Sample Quantiles",
+#     title = "Q-Q plots of age by heart disease"
+#   ) +
+#   theme_minimal(base_size = 12) +
+#   theme(plot.title = element_text(hjust = 0.5, size = 12))
+
+```
+
+```{r echo=FALSE}
+
+t.test(age ~ factor(heart_disease_present, levels=c(1, 0)), data = dat, var.equal = FALSE)
+
+```
+
+**ST depression induced by exercise**
+
+Question: Is there a statistically significant difference in the mean oldpeak between individuals with and without heart disease?
+
+Answer: **Welch t-test shows a significant difference in mean oldpeak between the two groups: the mean oldpeak is $0.59$ in the non-disease group, compared to $1.57$ in the heart disease group. The $95\%$ confidence interval for the difference in means is [-1.23 -0.74], indicating that individuals with no heart disease tend to have significantly lower ST depression induced by exercise.**
+
+```{r echo=FALSE}
+t.test(oldpeak ~ heart_disease_present, data = dat, var.equal = FALSE)
+```
+
+
+**Number of major vessels containing calcium**
+
+Question: Is there a linear trend in heart disease prevalence across the number of major ca vessels?
+
+Answer: We use *Cochran-Armitage test* to answer this question.
+**There is a highly significant increasing trend in heart disease prevalence with the number of major vessels, largely driven by the sharp increase between 0 and 1. Among those with >0 vessels, the upward trend continues, but the differences are more subtle and not statistically significant at the 0.05 level, possibly due to small sample sizes.**
+
+```{r echo=FALSE}
+library(DescTools)
+subset_tbl <- table(dat$num_major_vessels,
+                    dat$heart_disease_present)
+CochranArmitageTest(subset_tbl)
+
+```
+
+
+<br>
+
+### **(Unadjusted) Odds Ratio** {.tabset}
 
 The outcome of interest is heart disease, and the exposures are: sex, fasting glucose level, exercise induced angina, slope, chest pain type, and nuclear stress test.
 
@@ -543,6 +582,8 @@ formatted_results <- all_results %>%
 
 ```
 
+<br>
+
 ##### Plot
 
 ```{r echo=FALSE, fig.width=20, fig.height=8}
@@ -572,15 +613,15 @@ formatted_results %>%
 
 <br>
 
-#### **(Unadjusted) Odds Ratio with Multinomial Variables** {.tabset}
+### **(Unadjusted) Odds Ratio: Multinomial Variables** {.tabset}
 
 Here we consider odds ratio analysis regarding multinomial categorical variables: slope, chest pain type, nuclear stress test and electrocardiographic results at rest.
 
-For *slope variable*, upslope is the reference group. The following result shows that odds of heart disease in upslope group is $0.34$ than in those not in upslope: $(1-1/5.47)*100= 82\%$ lower than the flat group and $(1-1/3.93)*100= 75\%$ lower than the downslope group. Odds of heart disease in flat group is $5.4$ times higher than upslope group and odds of heart disease in downslope group is $3.9$ times higher than upslope group. Note that the confidence interval for downslope group is larger, since this group contains a small number of individuals.
+* For *slope variable*, upslope is the reference group. The following result shows that odds of heart disease in upslope group is $0.34$ than in those not in upslope: $(1-1/5.47)*100= 82\%$ lower than the flat group and $(1-1/3.93)*100= 75\%$ lower than the downslope group. Odds of heart disease in flat group is $5.4$ times higher than upslope group and odds of heart disease in downslope group is $3.9$ times higher than upslope group. Note that the confidence interval for downslope group is larger, since this group contains a small number of individuals.
 
-Compared to individuals with *typical angina*, those with asymptomatic presentation have significantly higher odds of heart disease: 6.15 times that with typical angina. In contrast, those with atypical angina (OR = 0.50) and non-anginal pain (OR = 0.61) have lower but non-significant odds of heart disease.
+* Compared to individuals with typical **angina**, those with asymptomatic presentation have significantly higher odds of heart disease: 6.15 times that with typical angina. In contrast, those with atypical angina (OR = 0.50) and non-anginal pain (OR = 0.61) have lower but non-significant odds of heart disease.
 
-Compared to individuals with normal *nuclear stress test results*, those with a fixed defect have $7$ times greater odds of heart disease, while those with a reversible defect have $11$ greater odds. These results are highly statistically significant and align with clinical understanding that reversible defects indicate myocardial ischemia.
+* Compared to individuals with normal **nuclear stress test results**, those with a fixed defect have $7$ times greater odds of heart disease, while those with a reversible defect have $11$ greater odds. These results are highly statistically significant and align with clinical understanding that reversible defects indicate myocardial ischemia.
 
 ```{r echo=FALSE}
 ### slope
@@ -631,6 +672,7 @@ formatted_results <- all_results %>%
 
 #kable(tmp, "html") %>% kable_styling(font_size = 14) 
 ```
+<br>
 
 ##### Plot
 
@@ -663,31 +705,33 @@ formatted_results %>%
 
 ```
 
+<br>
 
-#### **Adjusted Odds Ratio**
+### **Adjusted Odds Ratio**
 
 Now, we take into account all predictors in the logistic regression model to compute OR of heart disease. Feature selection process based on Akaike's information criterion removes restecg and age variables.
 
-Statistically important predictors of odds of heart disease are sex, chest pain type, resting blood pressure, maximum heart rate, oldpeak, number of major ca vessels, and nuclear stress test results.
+After adjusting, statistically important predictors of odds of heart disease are sex, chest pain type, resting blood pressure, maximum heart rate, oldpeak, number of major ca vessels, and nuclear stress test results.
 
 Holding other variables constant, 
 
-- males have $4$ times the odds of heart disease compared to females 
+- males have $4$ times the odds of heart disease compared to females
 
 - individuals with asymptomatic presentation have $7$ times the odds of heart disease compared to those with typical angina
 
 - each $1$ mmHg increase in resting blood pressure is associated with a $2.1\%$ increase in the odds of heart disease
 
-- each $1$ bpm increase in max heart rate is associated with a $2.3\%$ decrease in the odds of heart disease 
+- each $1$ bpm increase in max heart rate is associated with a $2.3\%$ decrease in the odds of heart disease
 
-- for every $1$ unit increase in ST depression, the odds of heart disease increase by $71\%$ 
+- for every $1$ unit increase in oldpeak (ST depression), the odds of heart disease increase by $71\%$
 
-- each additional major vessel visible via fluoroscopy *triples* the odds of heart disease 
+- each additional major vessel visible via fluoroscopy *triples* the odds of heart disease
 
 - individuals with a reversible defect on a nuclear stress test have $4$ times higher odds of heart disease compared to those with normal results.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(stringr)
 lr_model_all <- glm(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + restecg + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test , data = dat, family = "binomial")
 
 
@@ -695,15 +739,39 @@ step_model <- stats::step(lr_model_all, direction = "both", trace=0)
 
 results <- tidy(step_model, exponentiate = TRUE, conf.int = TRUE) %>%
   select(term, estimate, p.value) %>%
-  mutate(across(c(estimate, p.value), ~ round(., 3))) %>%
-  filter(p.value < 0.05) 
+  mutate(across(c(estimate, p.value), ~ round(., 3)))
+  # %>%
+  # filter(p.value < 0.05) 
 
+vars <- c(
+  "sex",
+  "chest_pain_type",
+  "exercise_induced_angina",
+  "rest_blood_pressure",
+  "cholesterol",
+  "fasting_blood_sugar",
+  "restecg",
+  "max_heart_rate",
+  "exercise_induced_angina",
+  "oldpeak",
+  "num_major_vessels",
+  "nuclear_stress_test"
+)
+
+pattern <- paste0("^(",
+                  paste(vars, collapse="|"),
+                  ")(.*)$")
+
+cleaned_results <- results %>%
+  mutate(
+    term = gsub(pattern, "\\1: \\2", term)   # insert “: ” between var and level
+  )
 
 ```
 
 ```{r echo=FALSE}
 
-results %>%
+cleaned_results %>%
   kbl(caption = "Adjusted Odds Ratios") %>%
   kable_paper("hover", full_width = F)
 
@@ -713,9 +781,9 @@ results %>%
 
 # Predictive Modeling
 
-### **Evaluation Measures**
+## **Evaluation Measures**
 
-Apart from the standard classification accuracy, the measures that we use for performance evaluation are *sensitivity*, *specificity*, *F1-measure*, *area under the ROC curve*, *Matthews correlation coefficient* and *accuracy*. **Sensitivity measures the proportion of individuals correctly identified as having heart disease among those who actually have heart disease, and specificity measures the proportion of individuals correctly identified as healthy among those who are actually healthy.** These measures take values between $0$ and $1$. 
+Apart from the standard classification accuracy, vars <- names(step_model$xlevels)the measures that we use for performance evaluation are *sensitivity*, *specificity*, *F1-measure*, *area under the ROC curve*, *Matthews correlation coefficient* and *accuracy*. **Sensitivity measures the proportion of individuals correctly identified as having heart disease among those who actually have heart disease, and specificity measures the proportion of individuals correctly identified as healthy among those who are actually healthy.** These measures take values between $0$ and $1$. 
 
 Sensitivity is also known as *recall*. *Precision* computes the fraction of true positives in all positively predicted outputs (i.e., true and false positives). The *F1-measure* is the harmonic mean of precision and recall, it balances precision and recall. But notice that if the specificity is 1 and the sensitivity is 0, then the precision is undefined, since there is neither true positives or false positives predicted, and thus, F1 measure is not defined.
 
@@ -725,7 +793,7 @@ Finally, *Matthews correlation coefficient* is computed based on the entire conf
 
 <br>
 
-### **Data Split**
+## **Data Split**
 
 We split the data into $75\%$ training and $25\%$ test set using rsample package of tidymodels framework. In what follows, we use set.seed to ensure reproducibility.
 
@@ -747,15 +815,15 @@ dat_cv <- vfold_cv(dat_train)
 
 <br>
 
-### **Models**  {.tabset}
+## **Models**  {.tabset}
 
 We use logistic regression, and models of higher capacity capable of learning non-linear decision boundaries, such as random forest and an improved version of the gradient boosting method, extreme gradient boosting. The latter models are particularly suitable for data with many categorical variables.
 
 We use the parsnip package of tidymodels to train the models, and the dials package to do grid search for hyperparameter tuning.
 
-#### **Logistic Regression**
+### **Logistic Regression**
 
-Logistic regression models log odds of heart disease as a linear combination of predictors.
+Logistic regression models the log odds of heart disease as a linear combination of input variables.
 
 Dropping age, resting electrocardiogram results and slope predictors improves predictive performance of logistic regression.
 
@@ -780,17 +848,18 @@ lr_result <- evaluate_model_fit(ground_truth, lr_probs$.pred_1)
 
 ```
 
-#### **Support vector classifier**
+### **Support Vector Machine**
 
 Support vector machine is a maximum-margin hyperplane classifier. Its strength lies in its ability to find such a hyperplane even in high- or infinite-dimensional feature spaces. An infinite-dimensional feature space can be implicitly created using a kernel function, such as the radial basis function kernel, which is one of the most widely used kernels. This implies that if the data is not separable in the input space, it might become so in the feature space.
 
 
-```{r}
-
+```{r, cache=TRUE}
+# data recipe
 dat_recipe <- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %>%
   step_impute_knn(all_predictors()) %>%
   step_normalize(all_numeric_predictors())  
 
+#model
 svm_model <- svm_rbf(
   cost = tune(),        # Regularization parameter
   rbf_sigma = tune()    # RBF kernel parameter (sigma = 1/(2*sigma^2))
@@ -798,16 +867,19 @@ svm_model <- svm_rbf(
   set_engine("kernlab") %>%
   set_mode("classification")
 
+#workflow
 svm_workflow <- workflow() %>%
   add_recipe(dat_recipe) %>%
   add_model(svm_model)
 
+#grid
 svm_grid <- grid_regular(
   cost(range = c(-3, 3)),         # log2 scale: 2^-3 to 2^3
   rbf_sigma(range = c(-3, 1)),    # log2 scale: 2^-3 to 2^1
   levels = 5
 )
 
+#grid search
 svm_tune_results <- svm_workflow %>%
   tune_grid(
     resamples = dat_cv,
@@ -815,13 +887,14 @@ svm_tune_results <- svm_workflow %>%
     metrics = metric_set(accuracy)
   )
 
-
+#finalize and fit
 param_final <- svm_tune_results %>% select_best(metric = "accuracy")
 
 svm_workflow <- svm_workflow %>% finalize_workflow(param_final)
 
 svm_fit <- svm_workflow %>% last_fit(dat_split)
 
+#prediction and evaluation
 svm_probs <- as.data.frame(svm_fit$.predictions)$.pred_1
 
 svm_result <- evaluate_model_fit(ground_truth, svm_probs)
@@ -829,8 +902,7 @@ svm_result <- evaluate_model_fit(ground_truth, svm_probs)
 ```
 
 
-
-#### **Random Forest**
+### **Random Forest**
 
 Random Forest is an ensemble method that builds multiple de-correlated decision trees using two sources of randomness:
 (1) each tree is trained on a bootstrap sample (a random subsample with replacement) of the training data, and
@@ -839,7 +911,7 @@ The final prediction is made by majority vote for classification.
 
 
 
-```{r}
+```{r, cache=TRUE}
 
 dat_recipe <- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %>% 
   step_impute_knn(all_predictors()) 
@@ -880,7 +952,7 @@ rf_result <- evaluate_model_fit(ground_truth, rf_probs)
 ```
 
 
-#### **Extreme Gradient Boosting**
+### **Extreme Gradient Boosting**
 
 Boosting sequentially applies a weak learner to a weighted version of the training data, where misclassified examples receive higher weights. Thus, in each iteration, the learning algorithm focuses more on the previously misclassified examples. The final model is a weighted combination of the weak learners, where higher weights are given to the more accurate ones.
 Gradient boosting extends this idea by fitting a new model to the negative gradient of a differentiable loss function at each iteration. Extreme gradient boosting is a scalable and efficient implementation of gradient boosting that includes additional regularization techniques.
@@ -954,7 +1026,7 @@ xgb_result <- evaluate_model_fit(ground_truth, xgb_probs)
 <br>
 
 
-### **Performance comparison of models**
+## **Performance Comparison**
 
 Logistic regression on this small dataset is superior to random forest and XGBoost with respect to all the evaluation measures considered as visualized by the plots below.
 
@@ -1016,11 +1088,11 @@ grid.arrange(p1, p2, p3, p4, ncol = 4)
 
 <br>
 
-#### **Incorrect predictions of logistic regression**
+### Analysis of Incorrect Predictions of Logistic Regression
 
 Now let us look at the distribution of incorrect predictions of logistic regression. In the confusion matrix above, we see that logistic regression made $4$ false positive and $4$ false negative predictions. Since maximum heart rate and old peak are relatively more discriminating predictors among the continuous variables we considered, below we overlay the incorrect predictions over the respective distributions of these variables. 
 
-```{r echo=FALSE, incorrect-preds, fig.height=5, fig.width=15, warning=FALSE}
+```{r echo=FALSE, fig.height=5, fig.width=15, warning=FALSE}
 
 preds <- lr_result$pred_class
 
@@ -1043,11 +1115,75 @@ grid.arrange(p1, p2, ncol=2)
 
 ```
 
-From our statistical analysis, we saw that individuals with heart disease tend to have lower maximum heart rate at stress. However, since there is an overlap in the class-conditional distributions of this variable, there are individuals with heart disease who also have higher maximum heart rate, and the algorithm predicts these individuals as healthy. Those are the false negatives. The same goes for healthy individuals with relatively lower maximum heart rate at stress, predicted as heart disease cases by the algorithm, thus they consitute false positives. This reasoning applies to oldpeak variable, i.e., the exercise induced ST depression. The healthy individuals tend to have lower oldpeak values, but there are individuals with heart disease who also have lower oldpeak values, and the algorithm predicts them as healthy, and thus they are false negatives. Similarly, there are individuals with no heart disease with higher oldpeak values, predicted as heart disease cases, thus they consitute false positives.
+From our statistical analysis, we saw that individuals with heart disease tend to have lower maximum heart rate at stress. However, since there is an overlap in the class-conditional distributions of this variable, there are individuals with heart disease who also have higher maximum heart rate, and the algorithm predicts these individuals as healthy. Those are the false negatives. The same goes for healthy individuals with relatively lower maximum heart rate at stress, predicted as heart disease cases by the algorithm, thus they constitute false positives. This reasoning applies to oldpeak variable, i.e., the exercise induced ST depression. The healthy individuals tend to have lower oldpeak values, but there are individuals with heart disease who also have lower oldpeak values, and the algorithm predicts them as healthy, and thus they are false negatives. Similarly, there are individuals with no heart disease with higher oldpeak values, predicted as heart disease cases, thus they constitute false positives.
+
+But what other values of the remaining variables driving the model to make wrong false negative predictions apart from max_heart_rate and oldpeak?
+
+The following plots show that these individuals with heart disease
+
+* do not experience exercise induced angina
+
+* have normal fasting blodd sugar level
+
+* $3$ of them have $0$ num major ca vessels
+
+* only one has reversible defect for nuclear test result.
+
+These are the values of important predictors that would describe a healthy individual.
+
+
+```{r echo=FALSE, fig.height=6, fig.width=15, warning=FALSE}
+
+o <- dat_test_preds[dat_test_preds$outcome %like% "False Negative%"==TRUE,]
+
+o$num_major_vessels <- as.factor(o$num_major_vessels)
+
+false_negatives_long <- o %>%
+  select(sex, chest_pain_type, fasting_blood_sugar, exercise_induced_angina, nuclear_stress_test, num_major_vessels) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "category")
+
+facet_colors <- c(
+  "sex" = "#556B2F",
+  "chest_pain_type" = "#FF7F24",
+  "fasting_blood_sugar" = "#8B8878",
+  "exercise_induced_angina" = "#A6CEE3",
+  "nuclear_stress_test" = "#66CDAA",
+  "num_major_vessels" = "#9A32CD"
+)
+
+ggplot(false_negatives_long, aes(x = category, fill = variable)) +
+  geom_bar() +
+  facet_wrap(~ variable, scales = "free") +
+  scale_fill_manual(values = facet_colors) +
+  theme_minimal(base_size = 16) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    legend.position = "none"
+  ) +
+  labs(
+    title = "Distribution of False Negatives",
+    x = "", y = "Count"
+  )
+
+
+```
+
+If we further look at all characteristics of one individual with reversible defect result, which is an important predictor of heart disease,which is predicted as not having heart disease, we see that the values of other variables are those of healthy individual. 
+
+```{r echo=FALSE}
+
+o1 <- o %>% select(-c(heart_disease_present, outcome, preds))
+
+kable(o1, "html") %>%
+  kable_styling(font_size = 12, stripe_color = "gray!10") %>%
+  scroll_box(width = "100%", height = "230px")
+```
+
 
 <br>
 
-#### **Positive predictive value and negative predictive value of logistic regression**
+**Positive predictive value and negative predictive value of logistic regression**
 
 The positive predictive value (PPV) is the probability that an individual predicted to have heart disease truly has heart disease, while the negative predictive value (NPV) is the probability that an individual predicted not to have heart disease truly does not have heart disease. Considering our logistic regression model as a diagnostic tool, the probability that an individual predicted to have heart disease have heart disease is $89\%$ and the probability that an individual predicted not to have heart disease does not have heart disease is $90\%$.
 
@@ -1089,6 +1225,7 @@ saveRDS(final_fit, file = "heart_disease_model.rds")
 
 ```
 
+<br>
 
 ```{r echo=FALSE, stop-here}
 knitr::knit_exit()
