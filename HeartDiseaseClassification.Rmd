@@ -163,7 +163,7 @@ grid.arrange(p1, p2, ncol = 2)
 
 ## Visualization
 
-### **Categorical Variables**
+### Categorical Variables
 
 The following plot illustrates the distribution of observations across categorical variables. We see that heart disease of some gravity is present in $46\%$, almost half of the individuals and $4\%$ percent of these individuals have severe case of heart disease. There are more males than females in this dataset: $68\%$ of observations.
 
@@ -202,7 +202,7 @@ ggplot(long_dat, aes(x = value, y = after_stat(prop), fill=variable)) +
 
 ```
 
-#### **Prevalence of Heart Disease**
+#### Prevalence of Heart Disease
 
 We now compute the prevalence of heart disease across categorcial variables. 
 
@@ -253,7 +253,7 @@ ggplot(hd_pct, aes(x = value, y = pct, fill = variable)) +
 
 <br>
 
-### **Continuous Variables**
+### Continuous Variables
 
 The distributions of age, cholesterol levels and resting blood pressure are almost bell shaped. The middle $50\%$ of age variable is somewhere between $50$ and $60$ years old, the maximum age is $77$ years old. The middle $50\%$ of cholesterol is between $211$ and $275$, the middle $50\%$ of maximum heart rate is between $134$ and $166$, and the middle $50\%$ of resting blood pressure is between $120$ and $140$. There is an outlier point in cholesterol variable with the value above $500$. In blood pressure variable the points with the value around $200$ stand out.
 
@@ -333,7 +333,7 @@ grid.arrange(p1, p2, nrow=2)
 
 <br>
 
-#### **Pairwise Plots**
+#### Pairwise Plots
 
 Next, we analyze pairwise relationships between some of these variables conditioned on heart disease variable. 
 
@@ -445,7 +445,7 @@ grid.arrange(p11, p12, p21, p22, ncol = 4)
 In this section, we do two or more group hypothesis tests, and also odds ratio (OR) analysis.
 
 
-### **Two group hypothesis test and linear trend test**
+### Two group hypothesis test and linear trend test
 
 
 We use Welch t-test to compare means of two groups with unequal variances.
@@ -529,7 +529,7 @@ CochranArmitageTest(subset_tbl)
 
 <br>
 
-### **(Unadjusted) Odds Ratio** {.tabset}
+### (Unadjusted) Odds Ratio {.tabset}
 
 The outcome of interest is heart disease, and the exposures are: sex, fasting glucose level, exercise induced angina, slope, chest pain type, and nuclear stress test.
 
@@ -612,7 +612,7 @@ formatted_results %>%
 
 <br>
 
-### **(Unadjusted) Odds Ratio: Multinomial Variables** {.tabset}
+### (Unadjusted) Odds Ratio: Multinomial Variables {.tabset}
 
 Here we consider odds ratio analysis regarding multinomial categorical variables: slope, chest pain type, nuclear stress test and electrocardiographic results at rest.
 
@@ -706,7 +706,7 @@ formatted_results %>%
 
 <br>
 
-### **Adjusted Odds Ratio**
+### Adjusted Odds Ratio
 
 Now, we take into account all predictors in the logistic regression model to compute OR of heart disease. Feature selection process based on Akaike's information criterion removes restecg and age variables.
 
@@ -780,7 +780,7 @@ cleaned_results %>%
 
 # Predictive Modeling
 
-## **Evaluation Measures**
+## Evaluation Measures
 
 Apart from the standard classification accuracy, vars <- names(step_model$xlevels)the measures that we use for performance evaluation are *sensitivity*, *specificity*, *F1-measure*, *area under the ROC curve*, *Matthews correlation coefficient* and *accuracy*. **Sensitivity measures the proportion of individuals correctly identified as having heart disease among those who actually have heart disease, and specificity measures the proportion of individuals correctly identified as healthy among those who are actually healthy.** These measures take values between $0$ and $1$. 
 
@@ -792,7 +792,7 @@ Finally, *Matthews correlation coefficient* is computed based on the entire conf
 
 <br>
 
-## **Data Split**
+## Data Split
 
 We split the data into $75\%$ training and $25\%$ test set using rsample package of tidymodels framework. In what follows, we use set.seed to ensure reproducibility.
 
@@ -820,13 +820,13 @@ ground_truth <- factor(dat_test$heart_disease_present, levels=c(1, 0))
 
 <br>
 
-## **Models**  {.tabset}
+## Models  {.tabset}
 
 We use logistic regression, and models of higher capacity capable of learning non-linear decision boundaries, such as support vector machines, random forest and an improved version of the gradient boosting method, extreme gradient boosting. The latter models are particularly suitable for data with many categorical variables. H2O AutoML framework is used for stacking some of these models for better performance.
 
 We use the parsnip package of tidymodels to train the models, and the dials package to do grid search for hyperparameter tuning.
 
-### **Logistic Regression**
+### Logistic Regression
 
 Logistic regression models the log-odds of heart disease as a linear combination of input variables. As a parametric model, each coefficient has a clear statistical interpretation. Although simple, logistic regression is suitable for small datasets, and its main strength lies in its interpretability.
 
@@ -851,7 +851,7 @@ lr_result <- evaluate_model_fit(ground_truth, lr_probs$.pred_1)
 
 ```
 
-### **Support Vector Machine**
+### Support Vector Machine
 
 Support vector machine is a maximum-margin hyperplane classifier. Its strength lies in its ability to find such a hyperplane even in high- or infinite-dimensional feature spaces. An infinite-dimensional feature space can be implicitly created using a kernel function, such as the radial basis function kernel, which is one of the most widely used kernels. This implies that if the data is not separable in the input space, it might become so in the feature space.
 
@@ -906,7 +906,7 @@ svm_result <- evaluate_model_fit(ground_truth, svm_probs)
 ```
 
 
-### **Random Forest**
+### Random Forest
 
 Random Forest is an ensemble method that builds multiple de-correlated decision trees using two sources of randomness:
 (1) each tree is trained on a bootstrap sample (a random subsample with replacement) of the training data, and
@@ -954,7 +954,7 @@ rf_result <- evaluate_model_fit(ground_truth, rf_probs)
 ```
 
 
-### **Extreme Gradient Boosting**
+### Extreme Gradient Boosting
 
 Boosting sequentially applies a weak learner to a weighted version of the training data, where misclassified examples receive higher weights. Thus, in each iteration, the learning algorithm focuses more on the previously misclassified examples. The final model is a weighted combination of the weak learners, where higher weights are given to the more accurate ones.
 Gradient boosting extends this idea by fitting a new model to the negative gradient of a differentiable loss function at each iteration. Extreme gradient boosting is a scalable and efficient implementation of gradient boosting that includes additional regularization techniques.
@@ -1025,7 +1025,7 @@ xgb_result <- evaluate_model_fit(ground_truth, xgb_probs)
 
 ```
 
-### **Stacking: H2O AutoML**
+### Stacking: H2O AutoML
 
 H2O AutoML is a framework that automatically trains and evaluates a wide range of machine learning algorithms such as generalized linear models, gradient boosting machines, random forests, and deep neural networks, using k-fold cross-validation. It then constructs a stacked ensemble model from the best-performing base models to further improve predictive performance.
 
@@ -1059,7 +1059,7 @@ automl_result <- evaluate_model_fit(ground_truth, automl_probs)
 <br>
 
 
-## **Performance Comparison**
+## Performance Comparison
 
 On this small dataset, logistic regression is superior to all models with respect to all the evaluation measures considered as visualized by the plots below.
 

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Khadija Musayeva" />
 
-<meta name="date" content="2025-04-22" />
+<meta name="date" content="2025-04-23" />
 
 <title>Heart Disease Data Analysis in R</title>
 
@@ -189,7 +189,7 @@ pre code {
 
 <h1 class="title toc-ignore">Heart Disease Data Analysis in R</h1>
 <h4 class="author">Khadija Musayeva</h4>
-<h4 class="date">2025-04-22</h4>
+<h4 class="date">2025-04-23</h4>
 
 </div>
 
@@ -207,62 +207,55 @@ values</a></li>
 <li><a href="#visualization" id="toc-visualization">Visualization</a>
 <ul>
 <li><a href="#categorical-variables"
-id="toc-categorical-variables"><strong>Categorical
-Variables</strong></a>
+id="toc-categorical-variables">Categorical Variables</a>
 <ul>
 <li><a href="#prevalence-of-heart-disease"
-id="toc-prevalence-of-heart-disease"><strong>Prevalence of Heart
-Disease</strong></a></li>
+id="toc-prevalence-of-heart-disease">Prevalence of Heart
+Disease</a></li>
 </ul></li>
 <li><a href="#continuous-variables"
-id="toc-continuous-variables"><strong>Continuous Variables</strong></a>
+id="toc-continuous-variables">Continuous Variables</a>
 <ul>
-<li><a href="#pairwise-plots" id="toc-pairwise-plots"><strong>Pairwise
-Plots</strong></a></li>
+<li><a href="#pairwise-plots" id="toc-pairwise-plots">Pairwise
+Plots</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#statistical-analysis"
 id="toc-statistical-analysis">Statistical Analysis</a>
 <ul>
 <li><a href="#two-group-hypothesis-test-and-linear-trend-test"
-id="toc-two-group-hypothesis-test-and-linear-trend-test"><strong>Two
-group hypothesis test and linear trend test</strong></a></li>
+id="toc-two-group-hypothesis-test-and-linear-trend-test">Two group
+hypothesis test and linear trend test</a></li>
 <li><a href="#unadjusted-odds-ratio"
-id="toc-unadjusted-odds-ratio"><strong>(Unadjusted) Odds
-Ratio</strong></a></li>
+id="toc-unadjusted-odds-ratio">(Unadjusted) Odds Ratio</a></li>
 <li><a href="#unadjusted-odds-ratio-multinomial-variables"
-id="toc-unadjusted-odds-ratio-multinomial-variables"><strong>(Unadjusted)
-Odds Ratio: Multinomial Variables</strong></a></li>
-<li><a href="#adjusted-odds-ratio"
-id="toc-adjusted-odds-ratio"><strong>Adjusted Odds
-Ratio</strong></a></li>
+id="toc-unadjusted-odds-ratio-multinomial-variables">(Unadjusted) Odds
+Ratio: Multinomial Variables</a></li>
+<li><a href="#adjusted-odds-ratio" id="toc-adjusted-odds-ratio">Adjusted
+Odds Ratio</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#predictive-modeling"
 id="toc-predictive-modeling">Predictive Modeling</a>
 <ul>
 <li><a href="#evaluation-measures"
-id="toc-evaluation-measures"><strong>Evaluation
-Measures</strong></a></li>
-<li><a href="#data-split" id="toc-data-split"><strong>Data
-Split</strong></a></li>
-<li><a href="#models" id="toc-models"><strong>Models</strong></a>
+id="toc-evaluation-measures">Evaluation Measures</a></li>
+<li><a href="#data-split" id="toc-data-split">Data Split</a></li>
+<li><a href="#models" id="toc-models">Models</a>
 <ul>
-<li><a href="#logistic-regression"
-id="toc-logistic-regression"><strong>Logistic
-Regression</strong></a></li>
+<li><a href="#logistic-regression" id="toc-logistic-regression">Logistic
+Regression</a></li>
 <li><a href="#support-vector-machine"
-id="toc-support-vector-machine"><strong>Support Vector
-Machine</strong></a></li>
-<li><a href="#random-forest" id="toc-random-forest"><strong>Random
-Forest</strong></a></li>
+id="toc-support-vector-machine">Support Vector Machine</a></li>
+<li><a href="#random-forest" id="toc-random-forest">Random
+Forest</a></li>
 <li><a href="#extreme-gradient-boosting"
-id="toc-extreme-gradient-boosting"><strong>Extreme Gradient
-Boosting</strong></a></li>
+id="toc-extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
+<li><a href="#stacking-h2o-automl"
+id="toc-stacking-h2o-automl">Stacking: H2O AutoML</a></li>
 </ul></li>
 <li><a href="#performance-comparison"
-id="toc-performance-comparison"><strong>Performance
-Comparison</strong></a>
+id="toc-performance-comparison">Performance Comparison</a>
 <ul>
 <li><a href="#analysis-of-incorrect-predictions-of-logistic-regression"
 id="toc-analysis-of-incorrect-predictions-of-logistic-regression">Analysis
@@ -318,7 +311,7 @@ medical standards.</p>
 <p><strong>Install and load packages</strong></p>
 <pre class="r"><code>### we use pacman to install and load the required packages
 if (!require(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)
-pacman::p_load(&quot;caret&quot;, &quot;data.table&quot;, &quot;DescTools&quot;, &quot;egg&quot;, &quot;epitools&quot;, &quot;GGally&quot;, &quot;ggplot2&quot;, &quot;gridExtra&quot;, &quot;kableExtra&quot;, &quot;magrittr&quot;, &quot;mlbench&quot;, &quot;mltools&quot;, &quot;naniar&quot;, &quot;parsnip&quot;, &quot;pROC&quot;, &quot;ranger&quot;, &quot;reshape2&quot;, &quot;recipes&quot;, &quot;rsample&quot;, &quot;shiny&quot;, &quot;smotefamily&quot;, &quot;themis&quot;,&quot;tidymodels&quot;, &quot;tune&quot;, &quot;viridis&quot;, &quot;workflows&quot;, &quot;yardstick&quot;, &quot;xgboost&quot;)
+pacman::p_load(&quot;agua&quot;,&quot;caret&quot;, &quot;data.table&quot;, &quot;DescTools&quot;, &quot;egg&quot;, &quot;epitools&quot;, &quot;GGally&quot;, &quot;ggplot2&quot;, &quot;gridExtra&quot;, &quot;kableExtra&quot;, &quot;magrittr&quot;, &quot;mlbench&quot;, &quot;mltools&quot;, &quot;naniar&quot;, &quot;parsnip&quot;, &quot;pROC&quot;, &quot;ranger&quot;, &quot;reshape2&quot;, &quot;recipes&quot;, &quot;rsample&quot;, &quot;shiny&quot;, &quot;smotefamily&quot;, &quot;themis&quot;,&quot;tidymodels&quot;, &quot;tune&quot;, &quot;viridis&quot;, &quot;workflows&quot;, &quot;yardstick&quot;, &quot;xgboost&quot;)
 
 source(&quot;utils.R&quot;)</code></pre>
 <div id="load-and-preprocess-the-data" class="section level2">
@@ -749,7 +742,7 @@ class="math inline">\(1\)</span> in female without heart disease.</p>
 <div id="visualization" class="section level2">
 <h2>Visualization</h2>
 <div id="categorical-variables" class="section level3">
-<h3><strong>Categorical Variables</strong></h3>
+<h3>Categorical Variables</h3>
 <p>The following plot illustrates the distribution of observations
 across categorical variables. We see that heart disease of some gravity
 is present in <span class="math inline">\(46\%\)</span>, almost half of
@@ -759,7 +752,7 @@ males than females in this dataset: <span
 class="math inline">\(68\%\)</span> of observations.</p>
 <p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-9-1.png" width="1440" /></p>
 <div id="prevalence-of-heart-disease" class="section level4">
-<h4><strong>Prevalence of Heart Disease</strong></h4>
+<h4>Prevalence of Heart Disease</h4>
 <p>We now compute the prevalence of heart disease across categorcial
 variables.</p>
 <p>The following plot shows that <span
@@ -779,7 +772,7 @@ disease.</p>
 </div>
 </div>
 <div id="continuous-variables" class="section level3">
-<h3><strong>Continuous Variables</strong></h3>
+<h3>Continuous Variables</h3>
 <p>The distributions of age, cholesterol levels and resting blood
 pressure are almost bell shaped. The middle <span
 class="math inline">\(50\%\)</span> of age variable is somewhere between
@@ -827,7 +820,7 @@ class-conditional distributions overlap.</p>
 <p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-14-1.png" width="1248" /></p>
 <p><br></p>
 <div id="pairwise-plots" class="section level4">
-<h4><strong>Pairwise Plots</strong></h4>
+<h4>Pairwise Plots</h4>
 <p>Next, we analyze pairwise relationships between some of these
 variables conditioned on heart disease variable.</p>
 <p>Independent of heart condition, maximum heart rate decreases with age
@@ -887,8 +880,7 @@ have heart disease.</strong></p>
 odds ratio (OR) analysis.</p>
 <div id="two-group-hypothesis-test-and-linear-trend-test"
 class="section level3">
-<h3><strong>Two group hypothesis test and linear trend
-test</strong></h3>
+<h3>Two group hypothesis test and linear trend test</h3>
 <p>We use Welch t-test to compare means of two groups with unequal
 variances.</p>
 <p><strong>Maximal heart rate</strong></p>
@@ -982,7 +974,7 @@ small sample sizes.</strong></p>
 <p><br></p>
 </div>
 <div id="unadjusted-odds-ratio" class="section level3 tabset">
-<h3 class="tabset"><strong>(Unadjusted) Odds Ratio</strong></h3>
+<h3 class="tabset">(Unadjusted) Odds Ratio</h3>
 <p>The outcome of interest is heart disease, and the exposures are: sex,
 fasting glucose level, exercise induced angina, slope, chest pain type,
 and nuclear stress test.</p>
@@ -1165,8 +1157,7 @@ yes
 </div>
 <div id="unadjusted-odds-ratio-multinomial-variables"
 class="section level3 tabset">
-<h3 class="tabset"><strong>(Unadjusted) Odds Ratio: Multinomial
-Variables</strong></h3>
+<h3 class="tabset">(Unadjusted) Odds Ratio: Multinomial Variables</h3>
 <p>Here we consider odds ratio analysis regarding multinomial
 categorical variables: slope, chest pain type, nuclear stress test and
 electrocardiographic results at rest.</p>
@@ -1495,7 +1486,7 @@ hypertrophy
 </div>
 </div>
 <div id="adjusted-odds-ratio" class="section level3">
-<h3><strong>Adjusted Odds Ratio</strong></h3>
+<h3>Adjusted Odds Ratio</h3>
 <p>Now, we take into account all predictors in the logistic regression
 model to compute OR of heart disease. Feature selection process based on
 Akaike’s information criterion removes restecg and age variables.</p>
@@ -1697,7 +1688,7 @@ nuclear_stress_test: reversible defect
 <div id="predictive-modeling" class="section level1">
 <h1>Predictive Modeling</h1>
 <div id="evaluation-measures" class="section level2">
-<h2><strong>Evaluation Measures</strong></h2>
+<h2>Evaluation Measures</h2>
 <p>Apart from the standard classification accuracy, vars &lt;-
 names(step_model$xlevels)the measures that we use for performance
 evaluation are <em>sensitivity</em>, <em>specificity</em>,
@@ -1727,14 +1718,12 @@ positives, false positives, true negatives and false negatives.</p>
 <p><br></p>
 </div>
 <div id="data-split" class="section level2">
-<h2><strong>Data Split</strong></h2>
+<h2>Data Split</h2>
 <p>We split the data into <span class="math inline">\(75\%\)</span>
 training and <span class="math inline">\(25\%\)</span> test set using
 rsample package of tidymodels framework. In what follows, we use
 set.seed to ensure reproducibility.</p>
 <pre class="r"><code>set.seed(123)
-
-dat &lt;- dat %&gt;% select(-heart_disease_severity)
 
 dat_split &lt;- initial_split(dat, prop = 3/4, strata = heart_disease_present)
 
@@ -1742,27 +1731,34 @@ dat_train &lt;- training(dat_split)
 
 dat_test &lt;- testing(dat_split)
                       
-dat_cv &lt;- vfold_cv(dat_train)</code></pre>
+dat_cv &lt;- vfold_cv(dat_train, v=5)
+
+# set the ground truth
+ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) </code></pre>
 <p><br></p>
 </div>
 <div id="models" class="section level2 tabset">
-<h2 class="tabset"><strong>Models</strong></h2>
+<h2 class="tabset">Models</h2>
 <p>We use logistic regression, and models of higher capacity capable of
-learning non-linear decision boundaries, such as random forest and an
-improved version of the gradient boosting method, extreme gradient
-boosting. The latter models are particularly suitable for data with many
-categorical variables.</p>
+learning non-linear decision boundaries, such as support vector
+machines, random forest and an improved version of the gradient boosting
+method, extreme gradient boosting. The latter models are particularly
+suitable for data with many categorical variables. H2O AutoML framework
+is used for stacking some of these models for better performance.</p>
 <p>We use the parsnip package of tidymodels to train the models, and the
 dials package to do grid search for hyperparameter tuning.</p>
 <div id="logistic-regression" class="section level3">
-<h3><strong>Logistic Regression</strong></h3>
-<p>Logistic regression models the log odds of heart disease as a linear
-combination of input variables.</p>
-<p>Dropping age, resting electrocardiogram results and slope predictors
-improves predictive performance of logistic regression.</p>
-<pre class="r"><code>ground_truth &lt;- factor(dat_test$heart_disease_present, levels=c(1, 0)) # set the ground truth
-
-dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% 
+<h3>Logistic Regression</h3>
+<p>Logistic regression models the log-odds of heart disease as a linear
+combination of input variables. As a parametric model, each coefficient
+has a clear statistical interpretation. Although simple, logistic
+regression is suitable for small datasets, and its main strength lies in
+its interpretability.</p>
+<p>Droping age, resting electrocardiogram results (our statisctical
+analysis above also showed that it is not an important predictor) and
+slope predictors improves predictive performance of logistic
+regression.</p>
+<pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% 
   step_impute_knn(all_predictors()) 
 
 lr_model &lt;- logistic_reg() %&gt;%  set_engine(&quot;glm&quot;) %&gt;% set_mode(&quot;classification&quot;) 
@@ -1778,7 +1774,7 @@ lr_probs &lt;- predict(lr_fit, dat_test, type = &quot;prob&quot;)
 lr_result &lt;- evaluate_model_fit(ground_truth, lr_probs$.pred_1)</code></pre>
 </div>
 <div id="support-vector-machine" class="section level3">
-<h3><strong>Support Vector Machine</strong></h3>
+<h3>Support Vector Machine</h3>
 <p>Support vector machine is a maximum-margin hyperplane classifier. Its
 strength lies in its ability to find such a hyperplane even in high- or
 infinite-dimensional feature spaces. An infinite-dimensional feature
@@ -1786,8 +1782,11 @@ space can be implicitly created using a kernel function, such as the
 radial basis function kernel, which is one of the most widely used
 kernels. This implies that if the data is not separable in the input
 space, it might become so in the feature space.</p>
+<p>Since, this model is based on Euclidean distance, which is sensitive
+to magnitude of predictor values, we normalize all numerical input
+variables</p>
 <pre class="r"><code># data recipe
-dat_recipe &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;%
+dat_recipe_svm &lt;- recipe(heart_disease_present ~ age + sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar + max_heart_rate + exercise_induced_angina + oldpeak + slope + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;%
   step_impute_knn(all_predictors()) %&gt;%
   step_normalize(all_numeric_predictors())  
 
@@ -1801,14 +1800,14 @@ svm_model &lt;- svm_rbf(
 
 #workflow
 svm_workflow &lt;- workflow() %&gt;%
-  add_recipe(dat_recipe) %&gt;%
+  add_recipe(dat_recipe_svm) %&gt;%
   add_model(svm_model)
 
 #grid
 svm_grid &lt;- grid_regular(
-  cost(range = c(-3, 3)),         # log2 scale: 2^-3 to 2^3
-  rbf_sigma(range = c(-3, 1)),    # log2 scale: 2^-3 to 2^1
-  levels = 5
+  cost(range = c(-10, 10)),         # log2 scale: 2^-3 to 2^3
+  rbf_sigma(range = c(-3, 3)),    # log2 scale: 2^-3 to 2^1
+  levels = 50
 )
 
 #grid search
@@ -1832,7 +1831,7 @@ svm_probs &lt;- as.data.frame(svm_fit$.predictions)$.pred_1
 svm_result &lt;- evaluate_model_fit(ground_truth, svm_probs)</code></pre>
 </div>
 <div id="random-forest" class="section level3">
-<h3><strong>Random Forest</strong></h3>
+<h3>Random Forest</h3>
 <p>Random Forest is an ensemble method that builds multiple
 de-correlated decision trees using two sources of randomness: (1) each
 tree is trained on a bootstrap sample (a random subsample with
@@ -1876,7 +1875,7 @@ rf_probs &lt;- as.data.frame(rf_fit$.predictions)$.pred_1
 rf_result &lt;- evaluate_model_fit(ground_truth, rf_probs)</code></pre>
 </div>
 <div id="extreme-gradient-boosting" class="section level3">
-<h3><strong>Extreme Gradient Boosting</strong></h3>
+<h3>Extreme Gradient Boosting</h3>
 <p>Boosting sequentially applies a weak learner to a weighted version of
 the training data, where misclassified examples receive higher weights.
 Thus, in each iteration, the learning algorithm focuses more on the
@@ -1947,29 +1946,74 @@ xgb_probs &lt;- preds$.pred_1
 #final_metrics &lt;- collect_metrics(final_fit)
 
 xgb_result &lt;- evaluate_model_fit(ground_truth, xgb_probs)</code></pre>
+</div>
+<div id="stacking-h2o-automl" class="section level3">
+<h3>Stacking: H2O AutoML</h3>
+<p>H2O AutoML is a framework that automatically trains and evaluates a
+wide range of machine learning algorithms such as generalized linear
+models, gradient boosting machines, random forests, and deep neural
+networks, using k-fold cross-validation. It then constructs a stacked
+ensemble model from the best-performing base models to further improve
+predictive performance.</p>
+<pre class="r"><code>theme_set(theme_bw())
+
+h2o_start()</code></pre>
+<pre><code>## Warning: JAVA not found, H2O may take minutes trying to connect.</code></pre>
+<pre><code>## Warning in h2o.clusterInfo(): 
+## Your H2O cluster version is (1 year, 4 months and 2 days) old. There may be a newer version available.
+## Please download and install the latest version from: https://h2o-release.s3.amazonaws.com/h2o/latest_stable.html</code></pre>
+<pre class="r"><code>auto_spec &lt;- auto_ml() %&gt;%
+  set_engine(&quot;h2o&quot;, max_runtime_secs = 300, seed = 1) %&gt;%
+  set_mode(&quot;classification&quot;)
+
+
+auto_wflow &lt;-
+  workflow() %&gt;%
+  add_model(auto_spec) %&gt;%
+  add_recipe(dat_recipe_svm)
+
+auto_fit &lt;- fit(auto_wflow, data = dat_train)
+
+automl_preds &lt;- predict(auto_fit, new_data = dat_test, type = &quot;prob&quot;)
+
+automl_probs &lt;- automl_preds$.pred_p1
+
+automl_result &lt;- evaluate_model_fit(ground_truth, automl_probs)</code></pre>
 <p><br></p>
 </div>
 </div>
 <div id="performance-comparison" class="section level2">
-<h2><strong>Performance Comparison</strong></h2>
-<p>Logistic regression on this small dataset is superior to random
-forest and XGBoost with respect to all the evaluation measures
-considered as visualized by the plots below.</p>
+<h2>Performance Comparison</h2>
+<p>On this small dataset, logistic regression is superior to all models
+with respect to all the evaluation measures considered as visualized by
+the plots below.</p>
 <pre class="r"><code>results_df &lt;- tribble(
   ~Model,         ~Accuracy, ~Sensitivity, ~Specificity, ~F1,       ~AUC,      ~Matthews,
   &quot;Logistic Reg&quot;, lr_result$acc, lr_result$sensi, lr_result$speci, lr_result$f1, lr_result$aucroc, lr_result$matcc,
-  &quot;Support Vector Classifier&quot;, svm_result$acc, svm_result$sensi, svm_result$speci, svm_result$f1, svm_result$aucroc, svm_result$matcc,
+  &quot;SVM&quot;, svm_result$acc, svm_result$sensi, svm_result$speci, svm_result$f1, svm_result$aucroc, svm_result$matcc,
   &quot;Random Forest&quot;, rf_result$acc, rf_result$sensi, rf_result$speci, rf_result$f1, rf_result$aucroc, rf_result$matcc,
-  &quot;XGBoost&quot;,       xgb_result$acc, xgb_result$sensi, xgb_result$speci, xgb_result$f1, xgb_result$aucroc, xgb_result$matcc
+  &quot;XGBoost&quot;,       xgb_result$acc, xgb_result$sensi, xgb_result$speci, xgb_result$f1, xgb_result$aucroc, xgb_result$matcc,
+  &quot;StackedModels&quot;,  automl_result$acc, automl_result$sensi, automl_result$speci, automl_result$f1, automl_result$aucroc, automl_result$matcc
 )
 
 results_long &lt;- results_df %&gt;% pivot_longer(cols = -Model, names_to = &quot;Metric&quot;, values_to = &quot;Value&quot;)
 
+results_long$Model &lt;- factor(results_long$Model, levels =  c(&quot;SVM&quot;, &quot;Random Forest&quot;, &quot;XGBoost&quot;, &quot;Logistic Reg&quot;, &quot;StackedModels&quot;))
+
+
+model_colors &lt;- c(
+  &quot;Logistic Reg&quot; = &quot;#CD661D&quot;,
+  &quot;SVM&quot; = &quot;#00688B&quot;,
+  &quot;Random Forest&quot; = &quot;#A6CEE3&quot;,
+  &quot;XGBoost&quot; = &quot;#66CDAA&quot;,
+  &quot;StackedModels&quot; = &quot;#556B2F&quot;
+)
+
+
 ggplot(results_long, aes(x = Metric, y = Value, fill = Model)) +
   geom_bar(stat = &quot;identity&quot;, position = position_dodge(), width = 0.7, color=&quot;#8B8B7A&quot;) +
   scale_y_continuous(n.breaks=10)+
-  scale_fill_brewer(palette = &quot;Set2&quot;) +
-  scale_color_brewer(palette = &quot;Set2&quot;) +
+  scale_fill_manual(values = model_colors) +
   labs(
     title = &quot;Performance comparison&quot;,
     y = &quot;Value&quot;,
@@ -1977,9 +2021,9 @@ ggplot(results_long, aes(x = Metric, y = Value, fill = Model)) +
   ) +
   theme_minimal()+     
   theme(plot.title = element_text(hjust = 0.5, size = 16))</code></pre>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-34-1.png" width="960" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-35-1.png" width="1728" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-36-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-36-1.png" width="960" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-37-1.png" width="1728" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-38-1.png" width="1440" /></p>
 <p><br></p>
 <div id="analysis-of-incorrect-predictions-of-logistic-regression"
 class="section level3">
@@ -1992,7 +2036,7 @@ Since maximum heart rate and old peak are relatively more discriminating
 predictors among the continuous variables we considered, below we
 overlay the incorrect predictions over the respective distributions of
 these variables.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-37-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-39-1.png" width="1440" /></p>
 <p>From our statistical analysis, we saw that individuals with heart
 disease tend to have lower maximum heart rate at stress. However, since
 there is an overlap in the class-conditional distributions of this
@@ -2022,7 +2066,7 @@ class="math inline">\(0\)</span> num major ca vessels</p></li>
 </ul>
 <p>These are the values of important predictors that would describe a
 healthy individual.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-38-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-40-1.png" width="1440" /></p>
 <p>If we further look at all characteristics of one individual with
 reversible defect result, which is an important predictor of heart
 disease,which is predicted as not having heart disease, we see that the
