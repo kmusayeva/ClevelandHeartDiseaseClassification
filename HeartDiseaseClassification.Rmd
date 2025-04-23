@@ -1029,7 +1029,7 @@ xgb_result <- evaluate_model_fit(ground_truth, xgb_probs)
 
 H2O AutoML is a framework that automatically trains and evaluates a wide range of machine learning algorithms such as generalized linear models, gradient boosting machines, random forests, and deep neural networks, using k-fold cross-validation. It then constructs a stacked ensemble model from the best-performing base models to further improve predictive performance.
 
-```{r}
+```{r, cache=TRUE}
 
 theme_set(theme_bw())
 
@@ -1063,7 +1063,7 @@ automl_result <- evaluate_model_fit(ground_truth, automl_probs)
 
 On this small dataset, logistic regression is superior to all models with respect to all the evaluation measures considered as visualized by the plots below.
 
-```{r fig.height=3, fig.width=10}
+```{r echo=FALSE, fig.height=3, fig.width=10}
 
 results_df <- tribble(
   ~Model,         ~Accuracy, ~Sensitivity, ~Specificity, ~F1,       ~AUC,      ~Matthews,
