@@ -11,11 +11,11 @@
 
 <meta name="author" content="Khadija Musayeva" />
 
-<meta name="date" content="2025-04-23" />
+<meta name="date" content="2026-10-26" />
 
 <title>Heart Disease Data Analysis in R</title>
 
-<script src="HeartDiseaseClassification_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="HeartDiseaseClassification_files/header-attrs-2.32/header-attrs.js"></script>
 <script src="HeartDiseaseClassification_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="HeartDiseaseClassification_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -189,7 +189,7 @@ pre code {
 
 <h1 class="title toc-ignore">Heart Disease Data Analysis in R</h1>
 <h4 class="author">Khadija Musayeva</h4>
-<h4 class="date">2025-04-23</h4>
+<h4 class="date">2026-10-26</h4>
 
 </div>
 
@@ -351,9 +351,9 @@ str(dat)</code></pre>
 <p>From the description of the dataset, two variables, number of major
 vessels and results of nuclear stress test, have missing values, we
 convert these values to NA.</p>
-<pre class="r"><code>dat$num_major_vessels &lt;- as.integer(dat$num_major_vessels)</code></pre>
-<pre><code>## Warning: NAs introduits lors de la conversion automatique</code></pre>
-<pre class="r"><code>dat$nuclear_stress_test &lt;- ifelse(dat$nuclear_stress_test==&quot;?&quot;, NA, dat$nuclear_stress_test)</code></pre>
+<pre class="r"><code>dat$num_major_vessels &lt;- as.integer(dat$num_major_vessels)
+
+dat$nuclear_stress_test &lt;- ifelse(dat$nuclear_stress_test==&quot;?&quot;, NA, dat$nuclear_stress_test)</code></pre>
 <p>We convert the categorical variables, sex, chest pain type, fasting
 blood sugar, resting electrocardiograph results, exercise induced
 angina, nuclear stress test results, and also heart disease state to
@@ -728,7 +728,7 @@ normal
 class="math inline">\(6\)</span> missing values: <span
 class="math inline">\(2\)</span> in nuclear stress test results and
 <span class="math inline">\(4\)</span> in number of major vessels.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/miss-plot-1.png" width="576" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/miss-plot-1.png" alt="" width="576" /></p>
 <p>We plot the distribution of the missing values with respect to two
 variables: sex and heart disease.</p>
 <p>The missing values of number of major vessels concern only males
@@ -736,7 +736,7 @@ mostly without heart disease, while those in the results of nuclear
 stress test are distributed among both: <span
 class="math inline">\(1\)</span> in male with heart disease and <span
 class="math inline">\(1\)</span> in female without heart disease.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/miss-distribution-plot-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/miss-distribution-plot-1.png" alt="" width="1440" /></p>
 <p><br></p>
 </div>
 <div id="visualization" class="section level2">
@@ -750,7 +750,7 @@ the individuals and <span class="math inline">\(4\%\)</span> percent of
 these individuals have severe case of heart disease. There are more
 males than females in this dataset: <span
 class="math inline">\(68\%\)</span> of observations.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-9-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-9-1.png" alt="" width="1440" /></p>
 <div id="prevalence-of-heart-disease" class="section level4">
 <h4>Prevalence of Heart Disease</h4>
 <p>We now compute the prevalence of heart disease across categorcial
@@ -767,7 +767,7 @@ class="math inline">\(37\%\)</span> of patients with normal
 electrocardiographic results, <span class="math inline">\(31\%\)</span>
 of patients with normal nuclear stress test results have heart
 disease.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/heart-disease-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/heart-disease-1.png" alt="" width="1440" /></p>
 <p><br></p>
 </div>
 </div>
@@ -792,19 +792,19 @@ cholesterol variable with the value above <span
 class="math inline">\(500\)</span>. In blood pressure variable the
 points with the value around <span class="math inline">\(200\)</span>
 stand out.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-10-1.png" width="1632" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-10-1.png" alt="" width="1632" /></p>
 <p>The following plot shows that there is not much difference between
 <strong>cholesterol</strong> levels across the levels of heart disease
 gravity. There is also a strong overlap between the distributions of
 cholesterol conditioned on the presence of heart disease.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-11-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-11-1.png" alt="" width="1248" /></p>
 <p>Regarding the <strong>blood pressure</strong>, the distribution of
 the one corresponding to heart disease severity of 4 stands out, its
 median is much higher close to 150, and there is no much difference
 between those &lt;4. As is the case with cholesterol, the distributions
 of resting blood pressure conditioned on the presence of heart disease
 overlap almost entirely.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-12-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-12-1.png" alt="" width="1248" /></p>
 <p><strong>Maximal heart rates of individuals with heart disease tend to
 be lower than those without.</strong> The density plot of maximal heart
 distribution of individuals without heart disease is shifted to the
@@ -813,11 +813,11 @@ disease, we see that the median maximal heart rates of those with
 severity of <span class="math inline">\(3\)</span> and <span
 class="math inline">\(4\)</span>, are situated further belows than those
 with lesser severity.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-13-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-13-1.png" alt="" width="1248" /></p>
 <p><strong>The median age of individuals with heart disease is higher,
 close to 60</strong>, than those without one, however overall these two
 class-conditional distributions overlap.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-14-1.png" width="1248" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-14-1.png" alt="" width="1248" /></p>
 <p><br></p>
 <div id="pairwise-plots" class="section level4">
 <h4>Pairwise Plots</h4>
@@ -827,7 +827,7 @@ variables conditioned on heart disease variable.</p>
 and that of individuals with heart disease tend to be lower.</p>
 <p>Resting blood pressure and cholesterol levels increase with age, and
 this association is stronger for non-heart disease individuals.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-15-1.png" width="960" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-15-1.png" alt="" width="960" /></p>
 <p>The linear regression model of maximum heart rate as a dependent
 variable of age and heart disease predictors shows that with each
 additional year of age the maximum heart rate decreases by 0.8 bpm on
@@ -869,7 +869,7 @@ contain calcium increases, the prevalence of heart disease in the
 corresponding group increases: <span class="math inline">\(85\%\)</span>
 of patients with <span class="math inline">\(3\)</span> such vessels
 have heart disease.</strong></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-17-1.png" width="1920" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-17-1.png" alt="" width="1920" /></p>
 <p><br></p>
 </div>
 </div>
@@ -956,10 +956,10 @@ induced by exercise.</strong></p>
 ## mean in group 0 mean in group 1 
 ##       0.5865854       1.5741007</code></pre>
 <p><strong>Number of major vessels containing calcium</strong></p>
-<p>Question: Is there a linear trend in heart disease prevalence across
-the number of major ca vessels?</p>
+<p>Question: Is there a linear trend in the heart disease prevalence
+across the number of major ca vessels?</p>
 <p>Answer: We use <em>Cochran-Armitage test</em> to answer this
-question. <strong>There is a highly significant increasing trend in
+question. <strong>There is a highly significant increasing trend in the
 heart disease prevalence with the number of major vessels, largely
 driven by the sharp increase between 0 and 1. Among those with &gt;0
 vessels, the upward trend continues, but the differences are more subtle
@@ -999,7 +999,7 @@ experience exercise induced angina.</p></li>
 <p><br></p>
 <div id="plot" class="section level5">
 <h5>Plot</h5>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-23-1.png" width="1920" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-23-1.png" alt="" width="1920" /></p>
 </div>
 <div id="table" class="section level5">
 <h5>Table</h5>
@@ -1171,9 +1171,9 @@ lower than the downslope group. Odds of heart disease in flat group is
 <span class="math inline">\(5.4\)</span> times higher than upslope group
 and odds of heart disease in downslope group is <span
 class="math inline">\(3.9\)</span> times higher than upslope group. Note
-that the confidence interval for downslope group is larger, since this
+that the confidence interval for downslope group is larger, because this
 group contains a small number of individuals.</p></li>
-<li><p>Compared to individuals with typical <strong>angina</strong>,
+<li><p>Compared to individuals with <strong>typical angina</strong>,
 those with asymptomatic presentation have significantly higher odds of
 heart disease: 6.15 times that with typical angina. In contrast, those
 with atypical angina (OR = 0.50) and non-anginal pain (OR = 0.61) have
@@ -1189,7 +1189,7 @@ reversible defects indicate myocardial ischemia.</p></li>
 <p><br></p>
 <div id="plot-1" class="section level5">
 <h5>Plot</h5>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-26-1.png" width="1920" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-26-1.png" alt="" width="1920" /></p>
 </div>
 <div id="table-1" class="section level5">
 <h5>Table</h5>
@@ -1689,16 +1689,16 @@ nuclear_stress_test: reversible defect
 <h1>Predictive Modeling</h1>
 <div id="evaluation-measures" class="section level2">
 <h2>Evaluation Measures</h2>
-<p>Apart from the standard classification accuracy, vars &lt;-
-names(step_model$xlevels)the measures that we use for performance
-evaluation are <em>sensitivity</em>, <em>specificity</em>,
-<em>F1-measure</em>, <em>area under the ROC curve</em>, <em>Matthews
-correlation coefficient</em> and <em>accuracy</em>. <strong>Sensitivity
-measures the proportion of individuals correctly identified as having
-heart disease among those who actually have heart disease, and
-specificity measures the proportion of individuals correctly identified
-as healthy among those who are actually healthy.</strong> These measures
-take values between <span class="math inline">\(0\)</span> and <span
+<p>Apart from the standard classification accuracy, the measures that we
+use for performance evaluation are <em>sensitivity</em>,
+<em>specificity</em>, <em>F1-measure</em>, <em>area under the ROC
+curve</em>, <em>Matthews correlation coefficient</em> and
+<em>accuracy</em>. <strong>Sensitivity measures the proportion of
+individuals correctly identified as having heart disease among those who
+actually have heart disease, and specificity measures the proportion of
+individuals correctly identified as healthy among those who are actually
+healthy.</strong> These measures take values between <span
+class="math inline">\(0\)</span> and <span
 class="math inline">\(1\)</span>.</p>
 <p>Sensitivity is also known as <em>recall</em>. <em>Precision</em>
 computes the fraction of true positives in all positively predicted
@@ -1754,10 +1754,8 @@ combination of input variables. As a parametric model, each coefficient
 has a clear statistical interpretation. Although simple, logistic
 regression is suitable for small datasets, and its main strength lies in
 its interpretability.</p>
-<p>Droping age, resting electrocardiogram results (our statisctical
-analysis above also showed that it is not an important predictor) and
-slope predictors improves predictive performance of logistic
-regression.</p>
+<p>Dropping age, resting electrocardiogram results and slope variables
+improves predictive performance of logistic regression.</p>
 <pre class="r"><code>dat_recipe &lt;- recipe(heart_disease_present ~ sex + chest_pain_type + rest_blood_pressure + cholesterol + fasting_blood_sugar  + max_heart_rate + exercise_induced_angina + oldpeak + num_major_vessels + nuclear_stress_test, data = dat_train) %&gt;% 
   step_impute_knn(all_predictors()) 
 
@@ -1810,13 +1808,15 @@ svm_grid &lt;- grid_regular(
   levels = 50
 )
 
+sink(tempfile()) 
 #grid search
 svm_tune_results &lt;- svm_workflow %&gt;%
-  tune_grid(
-    resamples = dat_cv,
-    grid = svm_grid,
-    metrics = metric_set(accuracy)
-  )
+    tune_grid(
+      resamples = dat_cv,
+      grid = svm_grid,
+      metrics = metric_set(accuracy)
+    )
+sink()
 
 #finalize and fit
 param_final &lt;- svm_tune_results %&gt;% select_best(metric = &quot;accuracy&quot;)
@@ -1957,12 +1957,9 @@ ensemble model from the best-performing base models to further improve
 predictive performance.</p>
 <pre class="r"><code>theme_set(theme_bw())
 
-h2o_start()</code></pre>
-<pre><code>## Warning: JAVA not found, H2O may take minutes trying to connect.</code></pre>
-<pre><code>## Warning in h2o.clusterInfo(): 
-## Your H2O cluster version is (1 year, 4 months and 2 days) old. There may be a newer version available.
-## Please download and install the latest version from: https://h2o-release.s3.amazonaws.com/h2o/latest_stable.html</code></pre>
-<pre class="r"><code>auto_spec &lt;- auto_ml() %&gt;%
+h2o_start()
+
+auto_spec &lt;- auto_ml() %&gt;%
   set_engine(&quot;h2o&quot;, max_runtime_secs = 300, seed = 1) %&gt;%
   set_mode(&quot;classification&quot;)
 
@@ -1987,9 +1984,9 @@ automl_result &lt;- evaluate_model_fit(ground_truth, automl_probs)</code></pre>
 <p>On this small dataset, logistic regression is superior to all models
 with respect to all the evaluation measures considered as visualized by
 the plots below.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-36-1.png" width="960" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-37-1.png" width="1728" /></p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-38-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-36-1.png" alt="" width="960" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-37-1.png" alt="" width="1728" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-38-1.png" alt="" width="1440" /></p>
 <p><br></p>
 <div id="analysis-of-incorrect-predictions-of-logistic-regression"
 class="section level3">
@@ -2002,7 +1999,7 @@ Since maximum heart rate and old peak are relatively more discriminating
 predictors among the continuous variables we considered, below we
 overlay the incorrect predictions over the respective distributions of
 these variables.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-39-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-39-1.png" alt="" width="1440" /></p>
 <p>From our statistical analysis, we saw that individuals with heart
 disease tend to have lower maximum heart rate at stress. However, since
 there is an overlap in the class-conditional distributions of this
@@ -2032,11 +2029,11 @@ class="math inline">\(0\)</span> num major ca vessels</p></li>
 </ul>
 <p>These are the values of important predictors that would describe a
 healthy individual.</p>
-<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-40-1.png" width="1440" /></p>
+<p><img src="HeartDiseaseClassification_files/figure-html/unnamed-chunk-40-1.png" alt="" width="1440" /></p>
 <p>If we further look at all characteristics of one individual with
 reversible defect result, which is an important predictor of heart
-disease,which is predicted as not having heart disease, we see that the
-values of other variables are those of healthy individual.</p>
+disease, which is predicted as not having heart disease, we see that the
+values of other variables are those of a healthy individual.</p>
 <div
 style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:230px; overflow-x: scroll; width:100%; ">
 <table class="table" style="font-size: 12px; margin-left: auto; margin-right: auto;">
